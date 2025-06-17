@@ -17,7 +17,7 @@ def register_callbacks(app):
         if tab == 'daily':
             return create_daily_layout()
         elif tab == 'monthly':
-            return create_daily_layout()
+            return create_monthly_layout()
 
     register_daily_callbacks(app)
     register_monthly_callbacks(app)

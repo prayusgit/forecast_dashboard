@@ -2,7 +2,9 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 
 
-def create_layout():
+# Module Imports
+
+def create_main_layout():
     return dbc.Container([
             html.H1("Transaction & Growth Forecast Dashboard", className="text-center my-4"),
 
@@ -11,5 +13,10 @@ def create_layout():
                 dbc.Tab(label='Monthly Forecast', tab_id='monthly'),
             ], className="mb-4"),
 
-            dbc.Card(dbc.CardBody(id='tabs-content'), className="shadow-sm")
-        ])
+            # dbc.Card([
+            #     dbc.CardHeader('Daily Forecast'),
+            #     dbc.CardBody(id='tabs-content')
+            # ], className="shadow-sm"),
+
+            html.Div(id='tabs-content')
+    ])
