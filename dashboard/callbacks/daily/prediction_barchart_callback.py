@@ -40,13 +40,13 @@ def register_prediction_callback(app):
         fig = px.bar(
             df,
             x='Service',
-            y='Transactions',
+            y='Amount',
             text='Amount',
             title=f"Transaction Amount Forecast - {selected_forecast}",
             labels={"Transactions": "Predicted Transactions Amount"},
             color='Service'
         )
-        fig.update_traces(texttemplate='%{text:,}', textposition='outside')
+        fig.update_traces(texttemplate='%{text:,}', textposition='outside',showlegend=False)
         fig.update_layout(yaxis_title='Transactions Amount', xaxis_title='Service Category')
         return fig
 
@@ -60,12 +60,12 @@ def register_prediction_callback(app):
             df,
             x='Service',
             y='Transactions',
-            text='Amount',
+            text='Transactions',
             title=f"Transaction Volume Forecast - {selected_forecast}",
             labels={"Transactions": "Predicted Transactions Volume"},
             color='Service'
         )
-        fig.update_traces(texttemplate='%{text:,}', textposition='outside')
+        fig.update_traces(texttemplate='%{text:,}', textposition='outside', showlegend=False)
         fig.update_layout(yaxis_title='Transactions Volume', xaxis_title='Service Category')
         return fig
 
