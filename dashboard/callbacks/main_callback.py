@@ -2,8 +2,8 @@
 from dash import html, dcc, Input, Output
 
 # Module imports
-from layout.daily.main import create_daily_layout
-from layout.monthly.main import create_monthly_layout
+from layout.forecast_analytics.daily.main import create_daily_layout
+from layout.forecast_analytics.monthly.main import create_monthly_layout
 from .daily.main import register_daily_callbacks
 from .monthly.main import register_monthly_callbacks
 

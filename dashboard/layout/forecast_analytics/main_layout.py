@@ -4,9 +4,12 @@ import dash_bootstrap_components as dbc
 
 # Module Imports
 
-def create_main_layout():
+
+
+def create_forecast_analytics_layout():
     return dbc.Container([
-            html.H1("Transaction & Growth Forecast Dashboard", className="text-center my-4"),
+            html.H1("Forecast and Analytics Dashboard", className="text-center my-4",
+                    style={'color': '#2E7D32'}),
 
             dbc.Tabs(id="forecast-tabs", active_tab='daily', children=[
                 dbc.Tab(label='Short Term', tab_id='daily'),

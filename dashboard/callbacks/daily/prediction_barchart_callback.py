@@ -35,7 +35,7 @@ def register_prediction_callback(app):
             Output('amount-forecast-graph', 'figure'),
             Input('forecast-dropdown', 'value')
         )
-    def update_graph(selected_forecast):
+    def update_amount_barchart(selected_forecast):
         df = get_forecast_df(selected_forecast)
         fig = px.bar(
             df,
@@ -47,25 +47,25 @@ def register_prediction_callback(app):
             color='Service'
         )
         fig.update_traces(texttemplate='%{text:,}', textposition='outside',showlegend=False)
-        fig.update_layout(yaxis_title='Transactions Amount', xaxis_title='Service Category')
+        fig.update_layout(yaxis_title='Transaction Amount (Rupees)', xaxis_title='Service Category')
         return fig
 
     @app.callback(
         Output('volume-forecast-graph', 'figure'),
         Input('forecast-dropdown', 'value')
     )
-    def update_graph(selected_forecast):
+    def update_volume_barchart(selected_forecast):
         df = get_forecast_df(selected_forecast)
         fig = px.bar(
             df,
             x='Service',
             y='Transactions',
             text='Transactions',
-            title=f"Transaction Volume Forecast - {selected_forecast}",
+            title=f"  ",
             labels={"Transactions": "Predicted Transactions Volume"},
             color='Service'
         )
         fig.update_traces(texttemplate='%{text:,}', textposition='outside', showlegend=False)
-        fig.update_layout(yaxis_title='Transactions Volume', xaxis_title='Service Category')
+        fig.update_layout(yaxis_title='Number of Transactions', xaxis_title='Service Category')
         return fig
 
