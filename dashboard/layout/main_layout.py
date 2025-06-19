@@ -1,44 +1,28 @@
 # Default Imports
 from dash import dcc, html, page_container
-
+import dash_bootstrap_components as dbc
 
 def create_main_layout():
-    return html.Div([
-            # Header
-            html.Div([
-                # Header content with logo and title
-                html.Div([
-                    # Clickable Logo
-                    dcc.Link(
-                        html.Img(
-                            src='/assets/img/esewa-icon-large.png',
-                            style={
-                                'height': '55px',
-                                'marginRight': '15px',
-                                'verticalAlign': 'middle',
-                                'cursor': 'pointer'
-                            }
-                        ),
-                        href='/'
+    return  html.Div([
+    # Header
+    dbc.Container([
+        dbc.Row([
+            dbc.Col([
+                dcc.Link(
+                    html.Img(
+                        src='/assets/img/esewa-icon-large.png',
+                        height='50px'  # Minimal styling
                     ),
-                    # Title
-                    html.H1('eSewa Analytics Platform', style={
-                        'color': '#2E7D32',
-                        'display': 'inline',
-                        'verticalAlign': 'middle'
-                    })
-                ], style={
-                    'display': 'flex',
-                    'alignItems': 'center',
-                    'justifyContent': 'flex-start',
-                    'padding': '20px',
-                    'marginLeft': '175px',
-                    'marginRight': '175px',
-                    'marginBottom': '20px',
-                    'borderBottom': '2px solid #4CAF50'
-                })
-            ]),
+                    href='/'
+                )
+            ], width='auto'),
 
-            # Main content area
-            page_container
-        ])
+            dbc.Col([
+                html.H3("eSewa Analytics Platform", className="mb-0")
+            ], width='auto', className='d-flex align-items-center')
+        ], className='py-3 border-bottom')
+    ], className='my-2'),
+
+    # Main content area
+    page_container
+])

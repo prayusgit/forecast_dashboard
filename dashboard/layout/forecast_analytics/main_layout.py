@@ -8,7 +8,7 @@ import dash_bootstrap_components as dbc
 
 def create_forecast_analytics_layout():
     return dbc.Container([
-            html.H1("Forecast and Analytics Dashboard", className="text-center my-4",
+            html.H2("Forecast and Analytics Dashboard", className="text-center my-4",
                     style={'color': '#2E7D32'}),
 
             dbc.Tabs(id="forecast-tabs", active_tab='daily', children=[

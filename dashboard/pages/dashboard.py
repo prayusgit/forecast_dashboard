@@ -1,9 +1,12 @@
+# Default Imports
 import dash
 from dash import html, dcc, callback
 from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
+import dash_bootstrap_components as dbc
+
 
 dash.register_page(__name__)
 
@@ -13,57 +16,63 @@ df = pd.read_csv('synthetic_data.csv')
 # Convert transaction_date to datetime
 df['transaction_date'] = pd.to_datetime(df['transaction_date'])
 
-layout = html.Div([
-    html.Div([
-        html.H2('Transaction Analysis Dashboard', style={
-            'textAlign': 'center',
-            'color': '#2E7D32',
-            'marginBottom': '30px'
-        }),
-        
-        # Date dropdown in its own row
-        dcc.Dropdown(
-            id='date-dropdown',
-            options=[
-                {'label': 'All Dates', 'value': 'all'},
-                *[{'label': date.strftime('%Y-%m-%d'), 'value': date.strftime('%Y-%m-%d')} 
-                  for date in sorted(df['transaction_date'].unique())]
-            ],
-            value='all',
-            style={'width': '50%', 'margin': '20px auto'}
-        ),
-        
-        # Flex row for bar charts
-        html.Div([
-            # Transaction Volume Bar Chart
+layout = dbc.Container([
             html.Div([
-                html.H3('Transaction Volume by Category', style={'color': '#2E7D32'}),
-                dcc.Graph(id='category-bar-chart')
-            ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20px'}),
-            
-            # Transaction Count Bar Chart
-            html.Div([
-                html.H3('Transaction Count by Category', style={'color': '#2E7D32'}),
-                dcc.Graph(id='category-count-chart')
-            ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20px'})
-        ], style={'display': 'flex', 'flexDirection': 'row'}),
+                html.H2('Transaction Data Visualization', style={
+                    'textAlign': 'center',
+                    'marginBottom': '30px'
+                }),
 
-        # New row for the range slider chart
-        html.Div([
-            html.H3('Transaction Volume Over Time', style={'color': '#2E7D32'}),
-            dcc.Dropdown(
-                id='category-dropdown',
-                options=[
-                    {'label': 'All Categories', 'value': 'all'},
-                    *[{'label': cat, 'value': cat} for cat in df['service_category'].unique()]
-                ],
-                value='all',
-                style={'width': '50%', 'margin': '20px auto'}
-            ),
-            dcc.Graph(id='range-slider-chart')
-        ], style={'width': '100%', 'padding': '0 20px'})
-    ], style={'padding': '20px', 'backgroundColor': '#f5f5f5'})
-])
+            # Date dropdown in its own row
+            dbc.Card([
+                dbc.CardHeader('Overall data visualization'),
+                dbc.CardBody([
+                    dcc.Dropdown(
+                        id='date-dropdown',
+                        options=[
+                            {'label': 'All Dates', 'value': 'all'},
+                            *[{'label': date.strftime('%Y-%m-%d'), 'value': date.strftime('%Y-%m-%d')}
+                              for date in sorted(df['transaction_date'].unique())]
+                        ],
+                        value='all',
+                        style={'width': '50%', 'margin': '20px auto'}
+                    ),
+
+                # Flex row for bar charts
+                dbc.Row([
+                    dbc.Col(
+                        # Transaction Volume Bar Chart
+                        html.Div([
+                            dcc.Graph(id='category-bar-chart')
+                        ]), width=6),
+
+                    # Transaction Count Bar Chart
+                    dbc.Col(
+                        html.Div([
+                            dcc.Graph(id='category-count-chart')
+                        ]), width=6)
+                    ]),
+                ])
+            ], className='mb-4'),
+
+            # New row for the range slider chart
+                dbc.Card([
+                    dbc.CardHeader('Transaction Revenue Over Time'),
+
+                    dcc.Dropdown(
+                        id='category-dropdown',
+                        options=[
+                            {'label': 'All Categories', 'value': 'all'},
+                            *[{'label': cat, 'value': cat} for cat in df['service_category'].unique()]
+                        ],
+                        value='all',
+                        style={'width': '50%', 'margin': '20px auto'}
+                    ),
+                    dcc.Graph(id='range-slider-chart', className='m-4')
+                ])
+            ],
+        )
+    ])
 
 # Bar chart for transaction volume
 @callback(
@@ -85,12 +94,10 @@ def update_bar_chart(selected_date):
         title=title,
         labels={'amount': 'Total Transaction Volume', 'service_category': 'Service Category'},
         color='service_category',
-        color_discrete_sequence=px.colors.qualitative.Set3
     )
     fig.update_layout(
         xaxis_title='Service Category',
         yaxis_title='Total Transaction Volume',
-        template='plotly_white',
         height=600,
         showlegend=False
     )
@@ -116,12 +123,10 @@ def update_count_chart(selected_date):
         title=title,
         labels={'count': 'Number of Transactions', 'service_category': 'Service Category'},
         color='service_category',
-        color_discrete_sequence=px.colors.qualitative.Set3
     )
     fig.update_layout(
         xaxis_title='Service Category',
         yaxis_title='Number of Transactions',
-        template='plotly_white',
         height=600,
         showlegend=False
     )
