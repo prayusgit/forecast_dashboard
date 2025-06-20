@@ -1,19 +1,15 @@
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 
-
 # Module Imports
-
-
 
 def create_forecast_analytics_layout():
     return dbc.Container([
-            html.H2("Forecast and Analytics Dashboard", className="text-center my-4",
-                    style={'color': '#2E7D32'}),
+            html.H2("Forecast and Analytics Dashboard", className="text-center my-4"),
 
-            dbc.Tabs(id="forecast-tabs", active_tab='daily', children=[
-                dbc.Tab(label='Short Term', tab_id='daily'),
-                dbc.Tab(label='Long Term', tab_id='monthly'),
+            dbc.Tabs(id="forecast-tabs", active_tab='category-view', children=[
+                dbc.Tab(label='Category View', tab_id='category-view'),
+                dbc.Tab(label='Product View', tab_id='product-view'),
             ], className="mb-4"),
 
             # dbc.Card([

@@ -2,10 +2,10 @@
 from dash import html, dcc, Input, Output
 
 # Module imports
-from layout.forecast_analytics.daily.main import create_daily_layout
-from layout.forecast_analytics.monthly.main import create_monthly_layout
-from .daily.main import register_daily_callbacks
-from .monthly.main import register_monthly_callbacks
+from layout.forecast_analytics.category_view.main import create_category_view_layout
+from layout.forecast_analytics.product_view.main import create_product_view_layout
+from .category_view.main import register_category_view_callbacks
+from .product_view.main import register_product_view_callbacks
 
 
 def register_callbacks(app):
@@ -14,10 +14,10 @@ def register_callbacks(app):
         Input('forecast-tabs', 'active_tab')
     )
     def render_tab_content(tab):
-        if tab == 'daily':
-            return create_daily_layout()
-        elif tab == 'monthly':
-            return create_monthly_layout()
+        if tab == 'category-view':
+            return create_category_view_layout()
+        elif tab == 'product-view':
+            return create_product_view_layout()
 
-    register_daily_callbacks(app)
-    register_monthly_callbacks(app)
+    register_category_view_callbacks(app)
+    register_product_view_callbacks(app)

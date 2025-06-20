@@ -10,11 +10,13 @@ total_volume = "NPR 12.5 Cr"
 growth_rate_yoy = 12.5
 forecast_confidence = 88
 
+
 # Helper to color percentage
 def colored_text(value):
     color = "success" if value >= 0 else "danger"
     sign = "+" if value >= 0 else "-"
     return html.Span(f"{sign}{abs(value):.1f}%", className=f"text-{color} ms-2")
+
 
 # KPI Card Layout using Bootstrap grid
 kpi_section = dbc.Row([

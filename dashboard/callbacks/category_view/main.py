@@ -8,7 +8,7 @@ from .wow_growth_section_callback import register_dash_table_callback
 from .alert_callback import register_alert_callback
 
 
-def register_daily_callbacks(app):
+def register_category_view_callbacks(app):
     register_prediction_callback(app)
     register_analytics_callback(app)
     register_dash_table_callback(app)

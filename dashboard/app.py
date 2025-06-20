@@ -14,7 +14,8 @@ app = dash.Dash(
     external_stylesheets=[
         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
         dbc.themes.BOOTSTRAP
-    ]
+    ],
+    suppress_callback_exceptions = True
 )
 
 # Layout

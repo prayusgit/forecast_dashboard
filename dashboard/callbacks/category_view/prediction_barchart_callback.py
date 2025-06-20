@@ -1,7 +1,7 @@
 # Default Imports
 import pandas as pd
 import plotly.express as px
-from dash import html, dcc, Input, Output
+from dash import Input, Output
 
 forecast_data = {
     "1 Day": [
@@ -32,17 +32,19 @@ def get_forecast_df(days):
 
 def register_prediction_callback(app):
     @app.callback(
-            Output('amount-forecast-graph', 'figure'),
-            Input('forecast-dropdown', 'value')
-        )
-    def update_amount_barchart(selected_forecast):
-        df = get_forecast_df(selected_forecast)
+        Output('amount-forecast-graph', 'figure'),
+        [Input('multi-category-selection-dropdown', 'value'),
+         Input('forecast-dropdown', 'value')]
+    )
+    def update_amount_barchart(selected_categories, selected_forecast_day):
+        df = get_forecast_df(selected_forecast_day)
+        df = df[df['Service'].isin(selected_categories)]
         fig = px.bar(
             df,
             x='Service',
             y='Amount',
             text='Amount',
-            title=f"Transaction Amount Forecast - {selected_forecast}",
+            title=f"Transaction Amount Forecast - {selected_forecast_day}",
             labels={"Transactions": "Predicted Transactions Amount"},
             color='Service'
         )
@@ -52,10 +54,12 @@ def register_prediction_callback(app):
 
     @app.callback(
         Output('volume-forecast-graph', 'figure'),
-        Input('forecast-dropdown', 'value')
+        [Input('multi-category-selection-dropdown', 'value'),
+         Input('forecast-dropdown', 'value')]
     )
-    def update_volume_barchart(selected_forecast):
-        df = get_forecast_df(selected_forecast)
+    def update_volume_barchart(selected_categories, selected_forecast_day):
+        df = get_forecast_df(selected_forecast_day)
+        df = df[df['Service'].isin(selected_categories)]
         fig = px.bar(
             df,
             x='Service',

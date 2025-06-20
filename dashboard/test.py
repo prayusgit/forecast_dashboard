@@ -1,74 +1,105 @@
 import dash
+from dash import dcc, html, Input, Output
 import dash_bootstrap_components as dbc
-from dash import html, dcc, Output, Input
 import pandas as pd
+import plotly.express as px
+import numpy as np
 from datetime import datetime, timedelta
-import random
 
-# Sample data generation for transactions
-categories = ['Ncell Topup', 'Electricity Bill', 'Khanepani Bill', 'TV Recharge', 'Internet Payment']
-today = datetime.today().date()
-
-# Generate 14 days of sample data
-data = []
-for i in range(14):
-    date = today - timedelta(days=i)
-    for cat in categories:
-        data.append({
-            'date': date,
-            'category': cat,
-            'transactions': random.randint(400, 1200)
-        })
-df = pd.DataFrame(data)
-
-# Define a list of upcoming Nepali festivals (example only)
-festivals = {
-    "Asar 15": datetime(2025, 6, 30).date(),
-    "Eid al-Adha": datetime(2025, 6, 25).date(),
-    "Teej": datetime(2025, 8, 28).date()
+# Sample mapping
+category_to_products = {
+    "Topup": ["NTC Topup", "Ncell Topup"],
+    "Banking": ["P2P Transfer", "Bank Withdrawal"],
 }
 
-# App initialization
+# Simulate a dataset
+def generate_sample_timeseries(product):
+    today = pd.Timestamp.today().normalize()
+    past_days = pd.date_range(today - pd.Timedelta(days=29), today - pd.Timedelta(days=1))
+    future_days = pd.date_range(today, today + pd.Timedelta(days=6))
+
+    past_values = np.random.randint(5000, 10000, len(past_days))
+    future_values = past_values[-1] + np.cumsum(np.random.randint(-500, 500, len(future_days)))
+
+    df_past = pd.DataFrame({"Date": past_days, "Amount": past_values, "Type": "Actual"})
+    df_future = pd.DataFrame({"Date": future_days, "Amount": future_values, "Type": "Forecast"})
+
+    df = pd.concat([df_past, df_future])
+    df["Product"] = product
+    return df
+
+
+# Build Dash App
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = dbc.Container([
-    html.H2("Alerts Section"),
-    html.Div(id='alert-output')
+    html.H4("Product Forecast Line Chart", className="mt-4"),
+
+    dbc.Row([
+        dbc.Col([
+            html.Label("Category:"),
+            dcc.Dropdown(
+                id="category-dropdown",
+                options=[{"label": c, "value": c} for c in category_to_products],
+                value="Topup",
+                clearable=False
+            )
+        ], width=4),
+
+        dbc.Col([
+            html.Label("Product(s):"),
+            dcc.Dropdown(id="product-dropdown")
+        ], width=6)
+    ]),
+
+    html.Br(),
+
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(id="product-line-chart")
+        ])
+    ])
 ], fluid=True)
 
+
 @app.callback(
-    Output('alert-output', 'children'),
-    Input('alert-output', 'id')  # Trigger on page load
+    Output("product-dropdown", "options"),
+    Output("product-dropdown", "value"),
+    Input("category-dropdown", "value")
 )
-def generate_alerts(_):
-    alerts = []
-    now = today
+def update_products(category):
+    if category:
+        products = category_to_products[category]
+        return [{"label": p, "value": p} for p in products], products
+    return [], []
 
-    # 1. Festival Alerts
-    for fest_name, fest_date in festivals.items():
-        days_diff = (fest_date - now).days
-        if 0 <= days_diff <= 7:
-            alerts.append(
-                dbc.Alert(f"✨ {fest_name} is in {days_diff} day(s). Expect transactional spike!", color="info")
-            )
 
-    # 2. WoW Alerts
-    wow_alerts = []
-    for cat in categories:
-        current_week = df[(df['date'] >= today - timedelta(days=6)) & (df['category'] == cat)].transactions.sum()
-        prev_week = df[(df['date'] < today - timedelta(days=6)) & (df['category'] == cat)].transactions.sum()
-        if prev_week == 0:
-            continue  # Avoid division by zero
-        growth = ((current_week - prev_week) / prev_week) * 100
-        message = f"{cat} {'grew' if growth > 0 else 'dropped'} {abs(growth):.1f}% WoW ({prev_week} → {current_week} txns)"
-        color = "success" if growth > 0 else "danger"
-        wow_alerts.append((abs(growth), dbc.Alert("\U0001F4C8 " + message, color=color)))
+@app.callback(
+    Output("product-line-chart", "figure"),
+    Input("product-dropdown", "value")
+)
+def update_line_chart(product):
+    if not product:
+        return px.line(title="No product selected")
 
-    # Show top 3 WoW changes
-    wow_alerts.sort(reverse=True, key=lambda x: x[0])
-    alerts.extend([alert for _, alert in wow_alerts[:3]])
+    df = generate_sample_timeseries(product)
 
-    return alerts
+    fig = px.line(
+        df,
+        x="Date",
+        y="Amount",
+        color="Product",
+        line_dash="Type",
+        markers=True,
+        title=f"{product} - Past 30 Days + Next 7 Days Forecast"
+    )
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Transaction Amount (NPR)",
+        hovermode="x unified"
+    )
+    return fig
+
 
 if __name__ == '__main__':
     app.run(debug=True)
