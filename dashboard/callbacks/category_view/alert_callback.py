@@ -1,8 +1,5 @@
 # Default Imports
 import dash_bootstrap_components as dbc
-from dash import Output, Input
-import dash
-import dash_bootstrap_components as dbc
 from dash import html, dcc, Output, Input
 import pandas as pd
 from datetime import datetime, timedelta

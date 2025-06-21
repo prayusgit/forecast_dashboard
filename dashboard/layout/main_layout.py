@@ -2,6 +2,7 @@
 from dash import dcc, html, page_container
 import dash_bootstrap_components as dbc
 
+
 def create_main_layout():
     return  html.Div([
     # Header
