@@ -4,36 +4,37 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import numpy as np
-from datetime import datetime, timedelta
 
-# Sample mapping
+# Category → Products map
 category_to_products = {
     "Topup": ["NTC Topup", "Ncell Topup"],
     "Banking": ["P2P Transfer", "Bank Withdrawal"],
+    "Bills": ["Electricity", "TV Recharge", "Khanepani"]
 }
 
-# Simulate a dataset
-def generate_sample_timeseries(product):
-    today = pd.Timestamp.today().normalize()
-    past_days = pd.date_range(today - pd.Timedelta(days=29), today - pd.Timedelta(days=1))
-    future_days = pd.date_range(today, today + pd.Timedelta(days=6))
+# Simulate forecast for next 7 days per product
+def simulate_next_week_forecast(category):
+    products = category_to_products[category]
+    np.random.seed(42)
+    forecast = []
 
-    past_values = np.random.randint(5000, 10000, len(past_days))
-    future_values = past_values[-1] + np.cumsum(np.random.randint(-500, 500, len(future_days)))
+    for prod in products:
+        # 7 daily values
+        daily_transactions = np.random.randint(500, 2000, 7)
+        daily_amounts = np.random.randint(100_000, 700_000, 7)
+        forecast.append({
+            "Product": prod,
+            "Predicted Transactions": daily_transactions.sum(),
+            "Predicted Amount": daily_amounts.sum()
+        })
+    return pd.DataFrame(forecast)
 
-    df_past = pd.DataFrame({"Date": past_days, "Amount": past_values, "Type": "Actual"})
-    df_future = pd.DataFrame({"Date": future_days, "Amount": future_values, "Type": "Forecast"})
 
-    df = pd.concat([df_past, df_future])
-    df["Product"] = product
-    return df
-
-
-# Build Dash App
+# Dash App
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = dbc.Container([
-    html.H4("Product Forecast Line Chart", className="mt-4"),
+    html.H4("Next Week Product Comparison", className="mt-4"),
 
     dbc.Row([
         dbc.Col([
@@ -47,59 +48,64 @@ app.layout = dbc.Container([
         ], width=4),
 
         dbc.Col([
-            html.Label("Product(s):"),
-            dcc.Dropdown(id="product-dropdown")
-        ], width=6)
+            html.Label("Select Products to Compare:"),
+            dcc.Dropdown(
+                id="product-multi-dropdown",
+                multi=True,
+                placeholder="Choose products to compare"
+            )
+        ], width=8),
     ]),
 
     html.Br(),
 
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(id="product-line-chart")
-        ])
-    ])
+    dcc.Graph(id="weekly-comparison-bar-chart")
 ], fluid=True)
 
 
 @app.callback(
-    Output("product-dropdown", "options"),
-    Output("product-dropdown", "value"),
+    Output("product-multi-dropdown", "options"),
+    Output("product-multi-dropdown", "value"),
     Input("category-dropdown", "value")
 )
 def update_products(category):
-    if category:
-        products = category_to_products[category]
-        return [{"label": p, "value": p} for p in products], products
-    return [], []
+    if not category:
+        return [], []
+    products = category_to_products[category]
+    options = [{"label": p, "value": p} for p in products]
+    return options, products  # Preselect all by default
 
 
 @app.callback(
-    Output("product-line-chart", "figure"),
-    Input("product-dropdown", "value")
+    Output("weekly-comparison-bar-chart", "figure"),
+    Input("category-dropdown", "value"),
+    Input("product-multi-dropdown", "value")
 )
-def update_line_chart(product):
-    if not product:
-        return px.line(title="No product selected")
+def update_bar_chart(category, selected_products):
+    if not selected_products:
+        return px.bar(title="No products selected")
 
-    df = generate_sample_timeseries(product)
+    df = simulate_next_week_forecast(category)
+    df = df[df["Product"].isin(selected_products)]
 
-    fig = px.line(
-        df,
-        x="Date",
-        y="Amount",
+    fig = px.bar(
+        df.sort_values("Predicted Amount"),
+        x="Predicted Amount",
+        y="Product",
+        orientation="h",
         color="Product",
-        line_dash="Type",
-        markers=True,
-        title=f"{product} - Past 30 Days + Next 7 Days Forecast"
+        text="Predicted Amount",
+        title="Predicted Transaction Amount for Next 7 Days"
     )
+
+    fig.update_traces(texttemplate='%{text:,}', textposition='outside')
     fig.update_layout(
-        xaxis_title="Date",
-        yaxis_title="Transaction Amount (NPR)",
-        hovermode="x unified"
+        xaxis_title="Total Predicted Amount (NPR)",
+        yaxis_title="Product",
+        height=450
     )
     return fig
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
