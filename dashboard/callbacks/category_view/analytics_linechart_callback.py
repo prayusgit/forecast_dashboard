@@ -173,7 +173,7 @@ def register_analytics_callback(app):
             xaxis_title="Date",
             yaxis_title="Transaction Amount (NPR)",
             hovermode="x unified",
-            template = "plotly_white",
+            template ="plotly_white",
         )
 
         return fig
@@ -219,7 +219,7 @@ def register_analytics_callback(app):
         ))
 
         fig.update_layout(
-            title=f"{product} — Forecast with Confidence Interval",
+            title=f"{product} — Past 30 days + 7 days Forecast",
             xaxis_title="Date",
             yaxis_title="Transaction Amount (NPR)",
             hovermode="x unified",

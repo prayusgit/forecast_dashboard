@@ -88,7 +88,7 @@ def register_growth_linechart_callback(app):
         ))
 
         fig.update_layout(
-            title=f"{product} — Forecast with Confidence Interval",
+            title=f"{product} — Past 30 days + 7 days Forecast",
             xaxis_title="Date",
             yaxis_title="Transaction Amount (NPR)",
             hovermode="x unified",
