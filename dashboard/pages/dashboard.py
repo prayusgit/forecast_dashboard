@@ -8,12 +8,13 @@ import pandas as pd
 dash.register_page(__name__)
 
 # Load the dataset
-df = pd.read_csv('synthetic_data.csv')
+df = pd.read_csv('dashboard/synthetic_data.csv')
 
 # Convert transaction_date to datetime
 df['transaction_date'] = pd.to_datetime(df['transaction_date'])
 
 layout = html.Div([
+    html.Button("Download PDF", id="download-pdf-btn", n_clicks=0, style={"marginBottom": "20px"}),
     html.Div([
         html.H2('Transaction Analysis Dashboard', style={
             'textAlign': 'center',
@@ -62,7 +63,7 @@ layout = html.Div([
             ),
             dcc.Graph(id='range-slider-chart')
         ], style={'width': '100%', 'padding': '0 20px'})
-    ], style={'padding': '20px', 'backgroundColor': '#f5f5f5'})
+    ], className='report-main-content')
 ])
 
 # Bar chart for transaction volume

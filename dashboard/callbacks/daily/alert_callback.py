@@ -66,3 +66,4 @@ def register_alert_callback(app):
         alerts.extend([alert for _, alert in wow_alerts[:3]])
 
         return alerts
+    
