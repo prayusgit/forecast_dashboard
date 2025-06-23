@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from dash import dcc, html, Input, Output, dash_table
 import dash_bootstrap_components as dbc
-
+import requests
 
 
 def generate_wow_growth_table():
@@ -43,11 +43,12 @@ def generate_wow_growth_table():
 def register_dash_table_callback(app):
     @app.callback(
         Output("wow-growth-table", "children"),
-        Input("wow-growth-table", "id")  # triggers on component mounting
+        Input('wow-multi-category-selection-dropdown', 'value')
     )
-    def display_growth_table(_):
-        df = generate_wow_growth_table()
-
+    def display_growth_table(categories):
+        response = requests.post('http://127.0.0.1:8000/api/category/wow-growth', json={'req_categories':categories}).json()['wow_growth_list']
+        df = pd.DataFrame(response, columns=["Category", "Week Forecast (Rs)", "WoW Growth (%)"])
+        print(df)
         return dash_table.DataTable(
             columns=[{"name": col, "id": col} for col in df.columns],
             data=df.to_dict("records"),
@@ -81,3 +82,14 @@ def register_dash_table_callback(app):
             style_table={'overflowX': 'auto'},
             page_size=10
         )
+
+    @app.callback(
+        Output('wow-multi-category-selection-dropdown', 'options'),
+        Output('wow-multi-category-selection-dropdown', 'value'),
+        Input('wow-multi-category-selection-dropdown', 'id')
+    )
+    def update_multi_dropdown(_):
+        categories = requests.get('http://127.0.0.1:8000/api/info/categories').json()['categories']
+        options = [{'label': cat, 'value': cat} for cat in categories]
+        return options, categories[:5]
+

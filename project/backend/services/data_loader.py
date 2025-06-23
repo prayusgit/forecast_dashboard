@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 _transaction_df = None  # cache in memory
 
+
 def load_transaction_data(refresh=False) -> pd.DataFrame:
     global _transaction_df
 
@@ -47,6 +48,18 @@ def get_past_days_data_product(product_name, past_days=30):
     df = load_transaction_data()
     df = df[df['transaction_date'].between(start_date, end_date)]
     df = df[df['product'] == product_name]
+    summary = df.groupby(["transaction_date"]).agg(
+        transaction_count=("amount", "count"),
+        transaction_amount=("amount", "sum")
+    ).reset_index()
+    return summary
+
+def get_past_days_data(past_days=30):
+    today = datetime.today()
+    start_date = today - timedelta(days=past_days)
+    end_date = today
+    df = load_transaction_data()
+    df = df[df['transaction_date'].between(start_date, end_date)]
     summary = df.groupby(["transaction_date"]).agg(
         transaction_count=("amount", "count"),
         transaction_amount=("amount", "sum")

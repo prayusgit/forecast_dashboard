@@ -2,10 +2,13 @@
 from fastapi import APIRouter
 import pandas as pd
 
+# Module Imports
+from services.data_loader import load_transaction_data
+
 
 router = APIRouter()
 
-df = pd.read_csv('../data/synthetic_data_v2.csv')
+df = load_transaction_data()
 
 category_to_products = (
         df.groupby('category')['product']
