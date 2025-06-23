@@ -3,10 +3,10 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 # Module Imports
-from frontend.components.category_view.prediction_barchart import amount_barchart, volume_barchart
-from frontend.components.category_view.day_selection_dropdown import day_selection_dropdown
-from frontend.components.category_view.multi_category_selection_dropdown import multi_category_selection_dropdown
-from frontend.components.category_view.kpi_section import kpi_section
+from components.category_view.prediction_barchart import amount_barchart, volume_barchart
+from components.category_view.day_selection_dropdown import day_selection_dropdown
+from components.category_view.multi_category_selection_dropdown import multi_category_selection_dropdown
+from components.category_view.kpi_section import kpi_section
 
 def transaction_forecast_layout():
     return dbc.Card([

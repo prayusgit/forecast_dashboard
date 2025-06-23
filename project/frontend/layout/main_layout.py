@@ -11,10 +11,10 @@ def create_main_layout():
             dbc.Col([
                 dcc.Link(
                     html.Img(
-                        src='/frontend/assets/img/esewa-icon-large.png',
+                        src='/assets/img/esewa-icon-large.png',
                         height='50px'  # Minimal styling
                     ),
-                    href='/frontend'
+                    href='/'
                 )
             ], width='auto'),
 

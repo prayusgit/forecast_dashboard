@@ -3,8 +3,8 @@ import dash
 import dash_bootstrap_components as dbc
 
 # Module Imports
-from .layout.main_layout import create_main_layout
-from .callbacks.main_callback import register_callbacks
+from layout.main_layout import create_main_layout
+from callbacks.main_callback import register_callbacks
 
 
 # External Bootstrap theme
@@ -16,7 +16,6 @@ app = dash.Dash(
         dbc.themes.BOOTSTRAP
     ],
     suppress_callback_exceptions=True,
-    requests_pathname_prefix="/frontend/",
 )
 
 

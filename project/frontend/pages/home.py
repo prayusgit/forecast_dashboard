@@ -49,7 +49,7 @@ layout = html.Div([
                     'text-align': 'center'
                 })
             ], style=card_style),
-            href='/frontend/dashboard',
+            href='/dashboard',
             style={'text-decoration': 'none'}
         ),
         
@@ -70,7 +70,7 @@ layout = html.Div([
                     'text-align': 'center'
                 })
             ], style=card_style),
-            href='/frontend/prediction',
+            href='/prediction',
             style={'text-decoration': 'none'}
         ),
         
@@ -91,7 +91,7 @@ layout = html.Div([
                     'text-align': 'center'
                 })
             ], style=card_style),
-            href='/frontend/reports',
+            href='/reports',
             style={'text-decoration': 'none'}
         ),
     ], style={

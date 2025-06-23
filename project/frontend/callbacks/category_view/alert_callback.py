@@ -4,9 +4,13 @@ from dash import html, dcc, Output, Input
 import pandas as pd
 from datetime import datetime, timedelta
 import random
+import requests
 
 # Sample data generation for transactions
-categories = ['Ncell Topup', 'Electricity Bill', 'Khanepani Bill', 'TV Recharge', 'Internet Payment']
+response = requests.get('http://127.0.0.1:8000/api/info/categories')
+categories = response.json()['categories']
+
+# categories = ['Ncell Topup', 'Electricity Bill', 'Khanepani Bill', 'TV Recharge', 'Internet Payment']
 today = datetime.today().date()
 
 # Generate 14 days of sample data
@@ -21,11 +25,10 @@ for i in range(14):
         })
 df = pd.DataFrame(data)
 
-# Define a list of upcoming Nepali festivals (example only)
+response = requests.get('http://127.0.0.1:8000/api/calender/festivals_within_7_days')
 festivals = {
-    "Asar 15": datetime(2025, 6, 30).date(),
-    "Eid al-Adha": datetime(2025, 6, 25).date(),
-    "Teej": datetime(2025, 8, 28).date()
+    key: datetime.strptime(value, "%Y-%m-%d").date()
+    for key, value in response.json().items()
 }
 
 
@@ -38,7 +41,7 @@ def register_alert_callback(app):
         alerts = []
         now = today
 
-        # 1. Festival Alerts
+        # 1. Festival Alerts (same as before)
         for fest_name, fest_date in festivals.items():
             days_diff = (fest_date - now).days
             if 0 <= days_diff <= 7:
@@ -46,20 +49,30 @@ def register_alert_callback(app):
                     dbc.Alert(f"✨ {fest_name} is in {days_diff} day(s). Expect transactional spike!", color="info")
                 )
 
-        # 2. WoW Alerts
-        wow_alerts = []
+        # 2. Prediction Alerts (compare predicted vs actual)
+        prediction_alerts = []
         for cat in categories:
-            current_week = df[(df['date'] >= today - timedelta(days=6)) & (df['category'] == cat)].transactions.sum()
-            prev_week = df[(df['date'] < today - timedelta(days=6)) & (df['category'] == cat)].transactions.sum()
-            if prev_week == 0:
-                continue  # Avoid division by zero
-            growth = ((current_week - prev_week) / prev_week) * 100
-            message = f"{cat} {'grew' if growth > 0 else 'dropped'} {abs(growth):.1f}% WoW ({prev_week} → {current_week} txns)"
-            color = "success" if growth > 0 else "danger"
-            wow_alerts.append((abs(growth), dbc.Alert("\U0001F4C8 " + message, color=color)))
+            # Actual transactions in current week
+            current_week = df[
+                (df['date'] >= today - timedelta(days=6)) & (df['category'] == cat)
+                ]['transactions'].sum()
 
-        # Show top 3 WoW changes
-        wow_alerts.sort(reverse=True, key=lambda x: x[0])
-        alerts.extend([alert for _, alert in wow_alerts[:3]])
+            # 🔮 Simulated prediction for next week
+            predicted_next_week = sum(random.randint(500, 1300) for _ in range(7))  # 7 days of predicted txns
+
+            if current_week == 0:
+                continue  # avoid divide by zero
+
+            growth = ((predicted_next_week - current_week) / current_week) * 100
+            message = (
+                f"{cat} is expected to {'grow' if growth > 0 else 'drop'} "
+                f"{abs(growth):.1f}% WoW ({current_week} → {predicted_next_week} txns)"
+            )
+            color = "success" if growth > 0 else "danger"
+            prediction_alerts.append((abs(growth), dbc.Alert("🔮 " + message, color=color)))
+
+        # Show top 3 largest predicted changes
+        prediction_alerts.sort(reverse=True, key=lambda x: x[0])
+        alerts.extend([alert for _, alert in prediction_alerts[:3]])
 
         return alerts

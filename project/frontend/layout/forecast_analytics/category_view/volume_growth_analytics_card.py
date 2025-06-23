@@ -3,8 +3,8 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 
 # Module Imports
-from frontend.components.category_view.growth_analytics_linechart import  volume_growth_linechart
-from frontend.components.category_view.category_selection_dropdown import volume_category_selection_dropdown
+from components.category_view.growth_analytics_linechart import  volume_growth_linechart
+from components.category_view.category_selection_dropdown import volume_category_selection_dropdown
 
 def volume_growth_analytics_layout():
     return dbc.Card([

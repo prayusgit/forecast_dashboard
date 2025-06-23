@@ -4,7 +4,7 @@ import dash
 
 
 # Module imports
-from frontend.layout.forecast_analytics.main import create_forecast_analytics_layout
+from layout.forecast_analytics.main import create_forecast_analytics_layout
 
 dash.register_page(__name__)
 

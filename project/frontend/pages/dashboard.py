@@ -11,7 +11,7 @@ import dash_bootstrap_components as dbc
 dash.register_page(__name__)
 
 # Load the dataset
-df = pd.read_csv('frontend/synthetic_data.csv')
+df = pd.read_csv('../data/synthetic_data.csv')
 
 # Convert transaction_date to datetime
 df['transaction_date'] = pd.to_datetime(df['transaction_date'])
