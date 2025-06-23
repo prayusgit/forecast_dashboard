@@ -2,8 +2,8 @@
 from dash import html, dcc, Input, Output
 
 # Module imports
-from layout.forecast_analytics.category_view.main import create_category_view_layout
-from layout.forecast_analytics.product_view.main import create_product_view_layout
+from frontend.layout.forecast_analytics.category_view.main import create_category_view_layout
+from frontend.layout.forecast_analytics.product_view.main import create_product_view_layout
 from .category_view.main import register_category_view_callbacks
 from .product_view.main import register_product_view_callbacks
 
