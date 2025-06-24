@@ -13,8 +13,6 @@ amount_category_selection_dropdown = html.Div([
             html.Label("Select Category:", style={'margin-bottom': '4px'}),
             dcc.Dropdown(
                 id='amount-category-selection-dropdown',
-                options=[{'label': cat, 'value': cat} for cat in categories],
-                value='NTC Topup',
                 clearable=False,
                 )
             ])

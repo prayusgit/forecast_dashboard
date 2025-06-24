@@ -3,10 +3,13 @@ from fastapi import APIRouter, Request
 from datetime import datetime, timedelta
 import requests
 import random
+import pandas as pd
+import numpy as np
+
 
 # Module Imports
 from services.data_loader import get_past_days_data_category
-from services.model import load_model
+from services.model import load_model, model_forecast
 
 router = APIRouter()
 
@@ -58,7 +61,6 @@ async def get_wow_growth(request: Request):
         # Actual transactions in current week
         # df = get_past_days_data_category(cat)[['transaction_count', features]] # For past 30 days
         current_week = get_past_days_data_category(cat, past_days=7)['transaction_amount'].sum()
-        print(current_week)
         # 🔮 Simulated prediction for next week
         # predicted_next_week = model.predict(df)
         predicted_next_week = sum(random.randint(10000, 30000) for _ in range(7))  # 7 days of predicted txns
@@ -72,3 +74,71 @@ async def get_wow_growth(request: Request):
     # Show top 3 largest predicted changes
     growth_list.sort(reverse=True, key=lambda x: abs(x[2]))
     return {'wow_growth_list': growth_list}
+
+@router.get('/forecast/category-amount/{category}')
+def forecast_category_amount(category: str):
+    today = pd.Timestamp.today().normalize()
+    df = get_past_days_data_category(category)
+
+    df_past = df[['transaction_date', 'transaction_amount']]
+    df_past['type'] = 'actual'
+
+    future_days = pd.date_range(today, today + pd.Timedelta(days=6))
+
+    forecast_base = df_past['transaction_amount'].iloc[-1]
+    print(forecast_base)
+    forecast_values = forecast_base + np.cumsum(np.random.randint(-5000, 5000, len(future_days)))
+    # forecast_values = model_forecast('transaction_amount', df)
+
+    lower_bound = forecast_values * 0.80
+    upper_bound = forecast_values * 1.20
+
+    df_future = pd.DataFrame({
+        "transaction_date": future_days,
+        "transaction_amount": forecast_values,
+        "lower": lower_bound,
+        "upper": upper_bound,
+        "type": "forecast"
+    })
+    return {
+        'past_data': df_past.to_dict(),
+        'future_data': df_future.to_dict()
+    }
+
+
+@router.get('/forecast/category-count/{category}')
+def forecast_category_volume(category: str):
+    today = pd.Timestamp.today().normalize()
+    df = get_past_days_data_category(category)
+
+    df_past = df[['transaction_date', 'transaction_count']]
+    df_past['type'] = 'actual'
+
+    future_days = pd.date_range(today, today + pd.Timedelta(days=6))
+
+    forecast_base = df_past['transaction_count'].iloc[-1]
+    print(forecast_base)
+    forecast_values = forecast_base + np.cumsum(np.random.randint(-3, 3, len(future_days)))
+    # forecast_values = model_forecast('transaction_amount', df)
+
+    lower_bound = forecast_values * 0.80
+    upper_bound = forecast_values * 1.20
+
+    df_future = pd.DataFrame({
+        "transaction_date": future_days,
+        "transaction_count": forecast_values,
+        "lower": lower_bound,
+        "upper": upper_bound,
+        "type": "forecast"
+    })
+    return {
+        'past_data': df_past.to_dict(),
+        'future_data': df_future.to_dict()
+    }
+
+
+@router.post('/predict/category-count/{day_after}')
+async def predict_category_count(day_after: int, request: Request):
+    data = await request.json()
+    pass
+

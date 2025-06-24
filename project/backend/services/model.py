@@ -28,19 +28,14 @@ def load_model(type):
             return model_product_amount
 
 
-def predict(type, name):
+def model_forecast(type, df):
     model = load_model(type)
-    if ('category' in type) and ('count' in type):
-        # df = get_past_days_data_category(name)[['transaction_count', features]]
-        # prediction = model.predict(df)
-        pass
-    elif ('category' in type) and ('amount' in type):
-        # df = get_past_days_data_category(name)[['transaction_amount', features]]
-        # prediction = model.predict(df)
-        pass
-    else:
-        # df = get_past_days_data_product(name)[['transaction_amount', features]]
-        # prediction = model.predict(df)
-        pass
+    # forecast = model.predict(df)
+    # return forecast
+    pass
+
+def model_predict(type, df):
+    model = load_model(type)
+    # prediction = model.predict(df)
     # return prediction
     pass

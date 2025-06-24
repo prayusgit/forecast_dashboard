@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from dash import Input, Output
 import requests
+import re
 
 forecast_data = {
     "1 Day": [
@@ -51,6 +52,7 @@ def register_prediction_callback(app):
          Input('forecast-dropdown', 'value')]
     )
     def update_amount_barchart(selected_categories, selected_forecast_day):
+
         df = get_forecast_df(selected_forecast_day)
         df = df[df['Service'].isin(selected_categories)]
         fig = px.bar(

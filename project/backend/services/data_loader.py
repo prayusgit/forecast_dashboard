@@ -29,8 +29,8 @@ def load_transaction_data(refresh=False) -> pd.DataFrame:
 
 def get_past_days_data_category(category_name, past_days=30):
     today = datetime.today()
-    start_date = today - timedelta(days=past_days)
-    end_date = today
+    start_date = today - timedelta(days=past_days+1)
+    end_date = today - timedelta(days=1)
     df = load_transaction_data()
     df = df[df['transaction_date'].between(start_date, end_date)]
     df = df[df['category'] == category_name]
@@ -43,8 +43,8 @@ def get_past_days_data_category(category_name, past_days=30):
 
 def get_past_days_data_product(product_name, past_days=30):
     today = datetime.today()
-    start_date = today - timedelta(days=past_days)
-    end_date = today
+    start_date = today - timedelta(days=past_days+1)
+    end_date = today - timedelta(days=1)
     df = load_transaction_data()
     df = df[df['transaction_date'].between(start_date, end_date)]
     df = df[df['product'] == product_name]
@@ -56,8 +56,8 @@ def get_past_days_data_product(product_name, past_days=30):
 
 def get_past_days_data(past_days=30):
     today = datetime.today()
-    start_date = today - timedelta(days=past_days)
-    end_date = today
+    start_date = today - timedelta(days=past_days+1)
+    end_date = today - timedelta(days=1)
     df = load_transaction_data()
     df = df[df['transaction_date'].between(start_date, end_date)]
     summary = df.groupby(["transaction_date"]).agg(
