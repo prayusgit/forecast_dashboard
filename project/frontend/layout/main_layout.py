@@ -26,5 +26,6 @@ def create_main_layout():
 
 
     # Main content area
-    page_container
-])
+    page_container,
+
+    ])

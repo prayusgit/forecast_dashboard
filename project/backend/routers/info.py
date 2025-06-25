@@ -1,6 +1,8 @@
 # Default Imports
 from fastapi import APIRouter
 import pandas as pd
+import pdfkit
+from fastapi.responses import HTMLResponse
 
 # Module Imports
 from services.data_loader import load_transaction_data
@@ -30,6 +32,7 @@ def get_products():
     return {'products': all_products}
 
 
-@router.get('/category_to_products')
-def get_products():
-    return category_to_products
+@router.get('/category_to_products/{category}')
+def get_products(category: str):
+    return {'products': category_to_products[category]}
+

@@ -7,6 +7,7 @@ from components.product_view.product_category_dropdown import product_view_categ
 from components.product_view.product_amount_growth_linechart import product_amount_growth_linechart
 from components.product_view.product_kpi_section import product_kpi_section
 
+
 def product_forecast_layout():
     return dbc.Card([
             dbc.CardHeader('Product Forecast Analytics'),

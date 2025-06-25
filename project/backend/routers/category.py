@@ -86,7 +86,7 @@ def forecast_category_amount(category: str):
     future_days = pd.date_range(today, today + pd.Timedelta(days=6))
 
     forecast_base = df_past['transaction_amount'].iloc[-1]
-    print(forecast_base)
+
     forecast_values = forecast_base + np.cumsum(np.random.randint(-5000, 5000, len(future_days)))
     # forecast_values = model_forecast('transaction_amount', df)
 
@@ -171,7 +171,7 @@ async def predict_category(request: Request):
             {"category": "shopping", "transaction_count": 8900, "transaction_amount": 7200000},
             {"category": "topup", "transaction_count": 16800, "transaction_amount": 9500000},
         ],
-        "1 Day": [
+        "1 Day After": [
             {"category": "bank_transaction", "transaction_count": 26000, "transaction_amount": 18000000},
             {"category": "bill_payment", "transaction_count": 16800, "transaction_amount": 89000000},
             {"category": "education", "transaction_count": 31000, "transaction_amount": 26000000},
@@ -182,7 +182,7 @@ async def predict_category(request: Request):
             {"category": "shopping", "transaction_count": 17800, "transaction_amount": 14500000},
             {"category": "topup", "transaction_count": 33600, "transaction_amount": 19000000},
         ],
-        "2 Days": [
+        "2 Days After": [
             {"category": "bank_transaction", "transaction_count": 39000, "transaction_amount": 27500000},
             {"category": "bill_payment", "transaction_count": 24800, "transaction_amount": 134000000},
             {"category": "education", "transaction_count": 47000, "transaction_amount": 39500000},
@@ -193,7 +193,7 @@ async def predict_category(request: Request):
             {"category": "shopping", "transaction_count": 26700, "transaction_amount": 21700000},
             {"category": "topup", "transaction_count": 50400, "transaction_amount": 28500000},
         ],
-        "3 Days": [
+        "3 Days After": [
             {"category": "bank_transaction", "transaction_count": 39000, "transaction_amount": 27500000},
             {"category": "bill_payment", "transaction_count": 24800, "transaction_amount": 134000000},
             {"category": "education", "transaction_count": 47000, "transaction_amount": 39500000},

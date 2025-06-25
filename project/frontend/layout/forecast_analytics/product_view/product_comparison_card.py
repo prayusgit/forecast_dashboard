@@ -11,7 +11,7 @@ def product_comparison_layout():
             dbc.CardHeader('Product Comparison Analytics'),
             dbc.CardBody([
                 dbc.Row([
-                    dbc.Col(html.H4("📊 Comparison with other products"), width=7),
+                    dbc.Col(html.H4("📊 Comparison of 7 Days Forecast With Other Products"), width=7),
                     dbc.Col(multi_product_selection_dropdown, width=5),
                 ]),
                 product_comparison_barchart

@@ -42,12 +42,12 @@ def get_past_days_data_category(category_name, past_days=30):
     return summary
 
 
-def get_past_days_data_product(product_name, past_days=30):
+def get_past_days_data_product(category_name, product_name, past_days=30):
     today = datetime.today()
     start_date = today - timedelta(days=past_days+1)
     end_date = today - timedelta(days=1)
     df = load_transaction_data()
-    df = df[df['product'] == product_name]
+    df = df[(df['category'] == category_name) & (df['product'] == product_name)]
     df = df[df['transaction_date'].between(start_date, end_date)]
     summary = df.groupby(["transaction_date"]).agg(
         transaction_count=("amount", "count"),

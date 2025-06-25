@@ -1,35 +1,9 @@
 # Default Imports
 from dash import Output, Input
-import dash_bootstrap_components as dbc
 import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
 import pandas as pd
+import requests
 
-
-category_to_products = {
-    "Topup": ["NTC Topup", "Ncell Topup"],
-    "Bill Payment": ["Electricity Bill", "Khanepani Bill", "TV Recharge",'fdsafdas', 'fdsafdsafdsafd', 'fdsafdasffdas', 'fdsaf','fd'],
-    "Banking": ["P2P Transfer", "Bank Withdrawal"],
-    "Insurance": ["Insurance Premium"]
-}
-
-# Simulate forecast for next 7 days per product
-def simulate_next_week_forecast(category):
-    products = category_to_products[category]
-    np.random.seed(42)
-    forecast = []
-
-    for prod in products:
-        # 7 daily values
-        daily_transactions = np.random.randint(500, 2000, 7)
-        daily_amounts = np.random.randint(100_000, 700_000, 7)
-        forecast.append({
-            "Product": prod,
-            "Predicted Transactions": daily_transactions.sum(),
-            "Predicted Amount": daily_amounts.sum()
-        })
-    return pd.DataFrame(forecast)
 
 def register_product_comparison_callback(app):
     @app.callback(
@@ -41,23 +15,25 @@ def register_product_comparison_callback(app):
         if not selected_products:
             return px.bar(title="No products selected")
 
-        df = simulate_next_week_forecast(category)
-        df = df[df["Product"].isin(selected_products)]
+        response = requests.post('http://127.0.0.1:8000/api/product/forecast', json={
+                                                                                    'category': category,
+                                                                                    'products': selected_products}).json()
+        df = pd.DataFrame(response['data'])
 
         fig = px.bar(
-            df.sort_values("Predicted Amount"),
-            x="Predicted Amount",
-            y="Product",
+            df.sort_values("transaction_amount"),
+            x="transaction_amount",
+            y="product",
             orientation="h",
-            color="Product",
-            text="Predicted Amount",
+            color="product",
+            text="transaction_amount",
             title="Predicted Transaction Amount for Next 7 Days"
         )
 
         fig.update_traces(texttemplate='%{text:,}', textposition='outside')
         fig.update_layout(
             xaxis_title="Total Predicted Amount (NPR)",
-            yaxis_title="Product",
+            yaxis_title="product",
             height=450
         )
         return fig
@@ -71,7 +47,8 @@ def register_product_comparison_callback(app):
     def update_products(category, product):
         if not category:
             return [], []
-        products = category_to_products[category]
+        response = requests.get(f'http://127.0.0.1:8000/api/info/category_to_products/{category}').json()
+        products = response['products']
         options = [{"label": p, "value": p} for p in products]
 
         default_choice = products[:5]

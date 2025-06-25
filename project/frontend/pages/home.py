@@ -74,26 +74,26 @@ layout = html.Div([
             style={'text-decoration': 'none'}
         ),
         
-        # Reports Card
-        dcc.Link(
-            html.Div([
-                html.I(className='fas fa-file-alt', style={
-                    'font-size': '48px',
-                    'color': '#D32F2F',
-                    'margin-bottom': '20px'
-                }),
-                html.H3('Reports', style={
-                    'color': '#D32F2F',
-                    'margin-bottom': '10px'
-                }),
-                html.P('Generate detailed reports and insights', style={
-                    'color': '#666',
-                    'text-align': 'center'
-                })
-            ], style=card_style),
-            href='/reports',
-            style={'text-decoration': 'none'}
-        ),
+        # # Reports Card
+        # dcc.Link(
+        #     html.Div([
+        #         html.I(className='fas fa-file-alt', style={
+        #             'font-size': '48px',
+        #             'color': '#D32F2F',
+        #             'margin-bottom': '20px'
+        #         }),
+        #         html.H3('Reports', style={
+        #             'color': '#D32F2F',
+        #             'margin-bottom': '10px'
+        #         }),
+        #         html.P('Generate detailed reports and insights', style={
+        #             'color': '#666',
+        #             'text-align': 'center'
+        #         })
+        #     ], style=card_style),
+        #     href='/reports',
+        #     style={'text-decoration': 'none'}
+        # ),
     ], style={
         'display': 'flex',
         'justify-content': 'center',

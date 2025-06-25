@@ -1,67 +1,62 @@
 # Default Imports
-from dash import Input, Output, html, dcc
-import plotly.express as px
+from dash import Input, Output, html
 import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
+import requests
+
+# Module Imports
+from utils.helper_functions import format
 
 
-category_to_products = {
-    "Topup": ["NTC Topup", "Ncell Topup"],
-    "Bill Payment": ["Electricity Bill", "Khanepani Bill", "TV Recharge"],
-    "Banking": ["P2P Transfer", "Bank Withdrawal"],
-    "Insurance": ["Insurance Premium"]
-}
+def colored_text(value):
+    color = "success" if value >= 0 else "danger"
+    sign = "+" if value >= 0 else "-"
+    return html.Span(f"{sign}{abs(value):.1f}%", className=f"text-{color} ms-2")
 
-
-def generate_sample_timeseries_with_ci(product):
-    today = pd.Timestamp.today().normalize()
-    past_days = pd.date_range(today - pd.Timedelta(days=29), today - pd.Timedelta(days=1))
-    future_days = pd.date_range(today, today + pd.Timedelta(days=6))
-
-    past_values = np.random.randint(5000, 10000, len(past_days))
-    forecast_base = past_values[-1]
-    forecast_values = forecast_base + np.cumsum(np.random.randint(-500, 500, len(future_days)))
-
-    # Confidence intervals: ±10%
-    lower_bound = forecast_values * 0.90
-    upper_bound = forecast_values * 1.10
-
-    df_past = pd.DataFrame({
-        "Date": past_days,
-        "Amount": past_values,
-        "Type": "Actual"
-    })
-
-    df_future = pd.DataFrame({
-        "Date": future_days,
-        "Amount": forecast_values,
-        "Lower": lower_bound,
-        "Upper": upper_bound,
-        "Type": "Forecast"
-    })
-
-    df_past["Product"] = product
-    df_future["Product"] = product
-
-    return df_past, df_future
 
 def register_growth_linechart_callback(app):
     @app.callback(
+        Output('kpi-product-transaction-amount', 'children'),
+        Output('kpi-product-wow-growth', 'children'),
+        Input('product-data-store', 'data')
+    )
+    def update_product_kpi(data):
+        df_past = pd.DataFrame(data['past_data'])
+        df_future = pd.DataFrame(data['future_data'])
+
+        current_week = df_past.iloc[-7:]['transaction_amount'].sum()
+
+        predicted_next_week = df_future['transaction_amount'].sum() # 7 days forecast (model simulation)
+
+        growth = ((predicted_next_week - current_week) / current_week) * 100
+
+        growth = round(growth, 1)
+
+        return "NPR " + format(predicted_next_week), colored_text(growth)
+
+
+    @app.callback(
         Output("product-amount-growth-linechart", "figure"),
+        Output('product-data-store', 'data'),
+        Input("product-view-category-dropdown", "value"),
         Input("product-view-product-dropdown", "value")
     )
-    def update_line_chart(product):
+    def update_line_chart(category, product):
         if not product:
             return go.Figure()
 
-        df_past, df_future = generate_sample_timeseries_with_ci(product)
+        response = requests.get(f'http://127.0.0.1:8000/api/product/forecast/product-amount/{category}/{product}').json()
+
+        df_past, df_future = pd.DataFrame(response['past_data']), pd.DataFrame(response['future_data'])
+
+        df_past['transaction_date'] = pd.to_datetime(df_past['transaction_date'])
+        df_future['transaction_date'] = pd.to_datetime(df_future['transaction_date'])
 
         fig = go.Figure()
 
         # Actual Line
         fig.add_trace(go.Scatter(
-            x=df_past["Date"], y=df_past["Amount"],
+            x=df_past["transaction_date"], y=df_past["transaction_amount"],
             mode="lines+markers",
             name="Actual",
             line=dict(color="blue")
@@ -69,7 +64,7 @@ def register_growth_linechart_callback(app):
 
         # Forecast Line
         fig.add_trace(go.Scatter(
-            x=df_future["Date"], y=df_future["Amount"],
+            x=df_future["transaction_date"], y=df_future["transaction_amount"],
             mode="lines+markers",
             name="Forecast",
             line=dict(color="green", dash="dash")
@@ -77,8 +72,8 @@ def register_growth_linechart_callback(app):
 
         # Confidence Interval: Shaded region
         fig.add_trace(go.Scatter(
-            x=pd.concat([df_future["Date"], df_future["Date"][::-1]]),
-            y=pd.concat([df_future["Upper"], df_future["Lower"][::-1]]),
+            x=pd.concat([df_future["transaction_date"], df_future["transaction_date"][::-1]]),
+            y=pd.concat([df_future["upper"], df_future["lower"][::-1]]),
             fill='toself',
             fillcolor='rgba(0, 200, 0, 0.1)',
             line=dict(color='rgba(255,255,255,0)'),
@@ -96,7 +91,20 @@ def register_growth_linechart_callback(app):
 
         )
 
-        return fig
+        return fig, {
+            'past_data': df_past.to_dict(),
+            'future_data': df_future.to_dict()
+        }
+
+    @app.callback(
+        Output('product-view-category-dropdown', 'options'),
+        Output('product-view-category-dropdown', 'value'),
+        Input('product-view-category-dropdown', 'id')
+    )
+    def update_volume_category_dropdown(_):
+        categories = requests.get('http://127.0.0.1:8000/api/info/categories').json()['categories']
+        options = [{'label': cat, 'value': cat} for cat in categories]
+        return options, categories[0]
 
     @app.callback(
         Output("product-view-product-dropdown", "options"),
@@ -105,7 +113,13 @@ def register_growth_linechart_callback(app):
     )
     def update_product_dropdown(category):
         if category:
-            products = category_to_products[category]
+            response = requests.get(f'http://127.0.0.1:8000/api/info/category_to_products/{category}').json()
+            products = response['products']
             options = [{"label": p, "value": p} for p in products]
             return options, products[0]  # pre-select all products by default
         return [], []
+
+
+
+
+

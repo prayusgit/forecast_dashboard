@@ -8,28 +8,8 @@ import re
 
 def register_prediction_callback(app):
     @app.callback(
-        Output('data-store', 'data'),
-        [Input('multi-category-selection-dropdown', 'value'),
-         Input('forecast-dropdown', 'value')]
-    )
-    def update_data_store(selected_categories, selected_forecast_day):
-        response = requests.post('http://127.0.0.1:8000/api/category/predict/',
-                                 json={'req_categories': selected_categories})
-        data = response.json()[selected_forecast_day]
-
-        df = pd.DataFrame(data)
-        df = df[df['category'].isin(selected_categories)]
-
-        return_data = {
-            'selected_categories': selected_categories,
-            'data': df.to_dict(),
-            'selected_forecast_day': selected_forecast_day
-        }
-        return return_data
-
-    @app.callback(
         Output('amount-forecast-graph', 'figure'),
-        Input('data-store', 'data')
+        Input('category-data-store', 'data')
 
     )
     def update_amount_barchart(data):
@@ -51,7 +31,7 @@ def register_prediction_callback(app):
 
     @app.callback(
         Output('volume-forecast-graph', 'figure'),
-        Input('data-store', 'data')
+        Input('category-data-store', 'data')
     )
     def update_volume_barchart(data):
 
