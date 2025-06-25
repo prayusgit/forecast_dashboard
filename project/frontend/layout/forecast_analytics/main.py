@@ -2,7 +2,7 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 
 # Module Imports
-
+from components.category_view.prediction_data_store import data_store
 def create_forecast_analytics_layout():
     return dbc.Container([
             html.H2("Forecast and Analytics Dashboard", className="text-center my-4"),
@@ -17,5 +17,7 @@ def create_forecast_analytics_layout():
             #     dbc.CardBody(id='tabs-content')
             # ], className="shadow-sm"),
 
-            html.Div(id='tabs-content')
+            html.Div(id='tabs-content'),
+            data_store,
+
     ])

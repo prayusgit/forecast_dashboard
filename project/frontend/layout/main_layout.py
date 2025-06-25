@@ -24,6 +24,7 @@ def create_main_layout():
         ], className='py-3 border-bottom')
     ], className='my-2'),
 
+
     # Main content area
     page_container
 ])

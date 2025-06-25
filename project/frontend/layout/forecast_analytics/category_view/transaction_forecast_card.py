@@ -19,7 +19,6 @@ def transaction_forecast_layout():
                     dbc.Col(width=2),
                     dbc.Col(day_selection_dropdown, width=4)
                 ]),
-
                 kpi_section,
                 dbc.Row([
                     dbc.Col(amount_barchart, className='col-6'),

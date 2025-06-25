@@ -21,3 +21,4 @@ def register_callbacks(app):
 
     register_category_view_callbacks(app)
     register_product_view_callbacks(app)
+

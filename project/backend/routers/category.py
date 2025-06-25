@@ -137,8 +137,74 @@ def forecast_category_volume(category: str):
     }
 
 
-@router.post('/predict/category-count/{day_after}')
-async def predict_category_count(day_after: int, request: Request):
+@router.post('/predict')
+async def predict_category(request: Request):
     data = await request.json()
-    pass
+    req_categories = data['req_categories']
+
+    # days = ['Today', '1 Day', '2 Days', '3 Days', '4 Days', '5 Days', '6 Days']
+    # forecast = {day: [] for day in days}
+    # for cat in categories:
+    #     df = get_past_days_data_category(cat)
+    #     df_amount = df.drop(columns=['transaction_count'])
+    #     df_count = df.drop(columns=['transaction_amount'])
+    #
+    #     forecast_amounts = model_forecast('category_amount', df_amount)
+    #     forecast_counts = model_forecast('category_count', df_count)
+    #
+    #     for day, amount, count in zip(days, forecast_amounts, forecast_counts):
+    #         forecast[day].append({
+    #                 'category': cat,
+    #                 'transaction_count': amount,
+    #                 'transaction_amount': count
+    #             })
+    # #
+    forecast_data = {
+        "Today": [
+            {"category": "bank_transaction", "transaction_count": 12500, "transaction_amount": 8750000},
+            {"category": "bill_payment", "transaction_count": 8200, "transaction_amount": 45600000},
+            {"category": "education", "transaction_count": 15800, "transaction_amount": 12300000},
+            {"category": "entertainment", "transaction_count": 22000, "transaction_amount": 67800000},
+            {"category": "government", "transaction_count": 450, "transaction_amount": 2100000},
+            {"category": "insurance", "transaction_count": 560, "transaction_amount": 3450000},
+            {"category": "loan", "transaction_count": 1300, "transaction_amount": 15000000},
+            {"category": "shopping", "transaction_count": 8900, "transaction_amount": 7200000},
+            {"category": "topup", "transaction_count": 16800, "transaction_amount": 9500000},
+        ],
+        "1 Day": [
+            {"category": "bank_transaction", "transaction_count": 26000, "transaction_amount": 18000000},
+            {"category": "bill_payment", "transaction_count": 16800, "transaction_amount": 89000000},
+            {"category": "education", "transaction_count": 31000, "transaction_amount": 26000000},
+            {"category": "entertainment", "transaction_count": 44000, "transaction_amount": 135000000},
+            {"category": "government", "transaction_count": 920, "transaction_amount": 4250000},
+            {"category": "insurance", "transaction_count": 1120, "transaction_amount": 6800000},
+            {"category": "loan", "transaction_count": 2600, "transaction_amount": 32000000},
+            {"category": "shopping", "transaction_count": 17800, "transaction_amount": 14500000},
+            {"category": "topup", "transaction_count": 33600, "transaction_amount": 19000000},
+        ],
+        "2 Days": [
+            {"category": "bank_transaction", "transaction_count": 39000, "transaction_amount": 27500000},
+            {"category": "bill_payment", "transaction_count": 24800, "transaction_amount": 134000000},
+            {"category": "education", "transaction_count": 47000, "transaction_amount": 39500000},
+            {"category": "entertainment", "transaction_count": 66000, "transaction_amount": 200000000},
+            {"category": "government", "transaction_count": 1400, "transaction_amount": 6300000},
+            {"category": "insurance", "transaction_count": 1680, "transaction_amount": 10200000},
+            {"category": "loan", "transaction_count": 3900, "transaction_amount": 48000000},
+            {"category": "shopping", "transaction_count": 26700, "transaction_amount": 21700000},
+            {"category": "topup", "transaction_count": 50400, "transaction_amount": 28500000},
+        ],
+        "3 Days": [
+            {"category": "bank_transaction", "transaction_count": 39000, "transaction_amount": 27500000},
+            {"category": "bill_payment", "transaction_count": 24800, "transaction_amount": 134000000},
+            {"category": "education", "transaction_count": 47000, "transaction_amount": 39500000},
+            {"category": "entertainment", "transaction_count": 66000, "transaction_amount": 200000000},
+            {"category": "government", "transaction_count": 1400, "transaction_amount": 6300000},
+            {"category": "insurance", "transaction_count": 1680, "transaction_amount": 10200000},
+            {"category": "loan", "transaction_count": 3900, "transaction_amount": 48000000},
+            {"category": "shopping", "transaction_count": 26700, "transaction_amount": 21700000},
+            {"category": "topup", "transaction_count": 100400, "transaction_amount": 2500000},
+        ]
+    }
+
+    return forecast_data
 

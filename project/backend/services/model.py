@@ -33,9 +33,3 @@ def model_forecast(type, df):
     # forecast = model.predict(df)
     # return forecast
     pass
-
-def model_predict(type, df):
-    model = load_model(type)
-    # prediction = model.predict(df)
-    # return prediction
-    pass

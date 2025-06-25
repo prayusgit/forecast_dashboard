@@ -13,9 +13,10 @@ def register_dash_table_callback(app):
         Input('wow-multi-category-selection-dropdown', 'value')
     )
     def display_growth_table(categories):
-        response = requests.post('http://127.0.0.1:8000/api/category/wow-growth', json={'req_categories':categories}).json()['wow_growth_list']
+        response = requests.post('http://127.0.0.1:8000/api/category/wow-growth', json={'req_categories':categories}).json()
 
-        df = pd.DataFrame(response, columns=["Category", "Week Forecast (Rs)", "WoW Growth (%)"])
+        data = response['wow_growth_list']
+        df = pd.DataFrame(data, columns=["Category", "Week Forecast (Rs)", "WoW Growth (%)"])
 
         return dash_table.DataTable(
             columns=[{"name": col, "id": col} for col in df.columns],

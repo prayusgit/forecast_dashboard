@@ -1,3 +1,4 @@
+# Default Imports
 import pandas as pd
 from datetime import datetime, timedelta
 
@@ -32,8 +33,8 @@ def get_past_days_data_category(category_name, past_days=30):
     start_date = today - timedelta(days=past_days+1)
     end_date = today - timedelta(days=1)
     df = load_transaction_data()
-    df = df[df['transaction_date'].between(start_date, end_date)]
     df = df[df['category'] == category_name]
+    df = df[df['transaction_date'].between(start_date, end_date)]
     summary = df.groupby(["transaction_date"]).agg(
         transaction_count=("amount", "count"),
         transaction_amount=("amount", "sum")
@@ -46,8 +47,8 @@ def get_past_days_data_product(product_name, past_days=30):
     start_date = today - timedelta(days=past_days+1)
     end_date = today - timedelta(days=1)
     df = load_transaction_data()
-    df = df[df['transaction_date'].between(start_date, end_date)]
     df = df[df['product'] == product_name]
+    df = df[df['transaction_date'].between(start_date, end_date)]
     summary = df.groupby(["transaction_date"]).agg(
         transaction_count=("amount", "count"),
         transaction_amount=("amount", "sum")
