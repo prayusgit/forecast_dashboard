@@ -11,7 +11,7 @@ def load_model(type):
     match type:
         case 'category_amount':
             global model_category_amount
-            if model_category_amount is  None:
+            if model_category_amount is None:
                 model_category_amount = 'model_category_amount' # joblib.load()
             return model_category_amount
 
@@ -23,7 +23,7 @@ def load_model(type):
 
         case 'product_amount':
             global model_product_amount
-            if model_product_amount is  None:
+            if model_product_amount is None:
                 model_product_amount = 'model_product_amount'
             return model_product_amount
 
