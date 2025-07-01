@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from dash import dcc, html, Input, Output, dash_table
 import dash_bootstrap_components as dbc
 import requests
+from utils.helper_functions import format
 
 
 # --- Callback with no inputs: triggered automatically on load
@@ -17,7 +18,7 @@ def register_dash_table_callback(app):
 
         data = response['wow_growth_list']
         df = pd.DataFrame(data, columns=["Category", "Week Forecast (Rs)", "WoW Growth (%)"])
-
+        df['Week Forecast (Rs)'] = df['Week Forecast (Rs)'].apply(format)
         return dash_table.DataTable(
             columns=[{"name": col, "id": col} for col in df.columns],
             data=df.to_dict("records"),

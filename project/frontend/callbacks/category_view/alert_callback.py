@@ -7,10 +7,6 @@ import random
 import requests
 
 
-
-
-
-
 def register_alert_callback(app):
     @app.callback(
         Output('alert-output', 'children'),
@@ -29,6 +25,7 @@ def register_alert_callback(app):
 
         # 1. Festival Alerts (same as before)
         for fest_name, fest_date in festivals.items():
+            days_diff = fest_date - now
             alerts.append(
                 dbc.Alert(f"✨ {fest_name} is in {days_diff} day(s). Expect transactional spike!", color="info")
             )

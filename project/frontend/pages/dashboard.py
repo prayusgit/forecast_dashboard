@@ -11,7 +11,7 @@ import dash_bootstrap_components as dbc
 dash.register_page(__name__)
 
 # Load the dataset
-df = pd.read_csv('../data/synthetic_data.csv')
+df = pd.read_csv('../data/original_data/synthetic_data_v6.csv')
 
 # Convert transaction_date to datetime
 df['transaction_date'] = pd.to_datetime(df['transaction_date'])
@@ -63,7 +63,7 @@ layout = dbc.Container([
                         id='category-dropdown',
                         options=[
                             {'label': 'All Categories', 'value': 'all'},
-                            *[{'label': cat, 'value': cat} for cat in df['service_category'].unique()]
+                            *[{'label': cat, 'value': cat} for cat in df['category'].unique()]
                         ],
                         value='all',
                         style={'width': '50%', 'margin': '20px auto'}
@@ -83,17 +83,17 @@ def update_bar_chart(selected_date):
     filtered_df = df.copy()
     if selected_date != 'all':
         filtered_df = filtered_df[filtered_df['transaction_date'].dt.strftime('%Y-%m-%d') == selected_date]
-    category_data = filtered_df.groupby('service_category')['amount'].sum().reset_index()
+    category_data = filtered_df.groupby('category')['amount'].sum().reset_index()
     title = 'Transaction Volume by Category'
     if selected_date != 'all':
         title += f' on {selected_date}'
     fig = px.bar(
         category_data,
-        x='service_category',
+        x='category',
         y='amount',
         title=title,
-        labels={'amount': 'Total Transaction Volume', 'service_category': 'Service Category'},
-        color='service_category',
+        labels={'amount': 'Total Transaction Volume', 'category': 'Service Category'},
+        color='category',
     )
     fig.update_layout(
         xaxis_title='Service Category',
@@ -112,17 +112,17 @@ def update_count_chart(selected_date):
     filtered_df = df.copy()
     if selected_date != 'all':
         filtered_df = filtered_df[filtered_df['transaction_date'].dt.strftime('%Y-%m-%d') == selected_date]
-    category_data = filtered_df.groupby('service_category').size().reset_index(name='count')
+    category_data = filtered_df.groupby('category').size().reset_index(name='count')
     title = 'Transaction Count by Category'
     if selected_date != 'all':
         title += f' on {selected_date}'
     fig = px.bar(
         category_data,
-        x='service_category',
+        x='category',
         y='count',
         title=title,
-        labels={'count': 'Number of Transactions', 'service_category': 'Service Category'},
-        color='service_category',
+        labels={'count': 'Number of Transactions', 'category': 'Service Category'},
+        color='category',
     )
     fig.update_layout(
         xaxis_title='Service Category',
@@ -140,11 +140,11 @@ def update_count_chart(selected_date):
 def update_range_slider_chart(selected_category):
     filtered_df = df.copy()
     if selected_category != 'all':
-        filtered_df = filtered_df[filtered_df['service_category'] == selected_category]
+        filtered_df = filtered_df[filtered_df['category'] == selected_category]
     # Group by date, sum amount, and get the first non-null festival_name for each date
     df_volume = (
         filtered_df.groupby('transaction_date')
-        .agg(amount=('amount', 'sum'), festival_name=('festival_name', 'first'))
+        .agg(amount=('amount', 'sum'), event_name=('event_name', 'first'))
         .reset_index()
     )
     fig = go.Figure()
@@ -154,7 +154,7 @@ def update_range_slider_chart(selected_category):
             y=df_volume['amount'],
             mode='lines',
             name='Volume',
-            customdata=df_volume['festival_name'],
+            customdata=df_volume['event_name'],
             hovertemplate=(
                 'Date: %{x|%b %d, %Y}<br>' +
                 'Amount: %{y:,.0f}<br>' +

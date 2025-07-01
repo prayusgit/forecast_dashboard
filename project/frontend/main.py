@@ -18,7 +18,6 @@ app = dash.Dash(
     suppress_callback_exceptions=True,
 )
 
-
 # Layout
 app.layout = create_main_layout()
 

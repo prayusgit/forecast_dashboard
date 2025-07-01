@@ -15,33 +15,72 @@ def register_analytics_callback(app):
         if not category:
             return go.Figure()
 
+            # API call
         response = requests.get(f'http://127.0.0.1:8000/api/category/forecast/category-amount/{category}').json()
 
-        df_past, df_future = pd.DataFrame(response['past_data'], ), pd.DataFrame(response['future_data'])
+        # Load data
+        df_actual = pd.DataFrame(response['past_data_actual'])  # actual
+        df_forecast = pd.DataFrame(response['past_data_forecast'])  # forecast
+        df_future = pd.DataFrame(response['future_data_forecast'])  # next 7 days
 
-        df_past['transaction_date'] = pd.to_datetime(df_past['transaction_date'])
+        # Date conversion
+        df_actual['transaction_date'] = pd.to_datetime(df_actual['transaction_date'])
+        df_forecast['transaction_date'] = pd.to_datetime(df_forecast['transaction_date'])
         df_future['transaction_date'] = pd.to_datetime(df_future['transaction_date'])
 
+        # Merge actual and forecast on date to compare
+        df_compare = pd.merge(df_actual, df_forecast, on='transaction_date', suffixes=('_actual', '_pred'))
 
+        # Calculate prediction error (%)
+        df_compare['error_pct'] = ((df_compare['transaction_amount_pred'] - df_compare['transaction_amount_actual']) /
+                                   df_compare['transaction_amount_actual']) * 100
+
+        # Identify large errors (> 20%)
+        df_compare['large_error'] = df_compare['error_pct'].abs() > 50
+
+        # Start plotting
         fig = go.Figure()
 
-        # Actual Line
+        # Actual Line (Blue)
         fig.add_trace(go.Scatter(
-            x=df_past["transaction_date"], y=df_past["transaction_amount"],
-            mode="lines+markers",
-            name="Actual",
-            line=dict(color="blue")
+            x=df_compare['transaction_date'],
+            y=df_compare['transaction_amount_actual'],
+            mode='lines+markers',
+            name='Actual',
+            line=dict(color='blue')
         ))
 
-        # Forecast Line
+        # Predicted Line (Green)
         fig.add_trace(go.Scatter(
-            x=df_future["transaction_date"], y=df_future["transaction_amount"],
-            mode="lines+markers",
-            name="Forecast",
-            line=dict(color="green", dash="dash")
+            x=df_compare['transaction_date'],
+            y=df_compare['transaction_amount_pred'],
+            mode='lines+markers',
+            name='Predicted',
+            line=dict(color='orange'),
         ))
 
-        # Confidence Interval: Shaded region
+        # Large Error Points (Red markers)
+        df_errors = df_compare[df_compare['large_error']]
+        fig.add_trace(go.Scatter(
+            x=df_errors['transaction_date'],
+            y=df_errors['transaction_amount_pred'],
+            mode='markers',
+            name='Large Errors (>50%)',
+            marker=dict(color='red', size=10, symbol='x'),
+            hoverinfo='skip'
+
+        ))
+
+        # Forecast (Future) Line
+        fig.add_trace(go.Scatter(
+            x=df_future["transaction_date"],
+            y=df_future["transaction_amount"],
+            mode="lines+markers",
+            name="Future Forecast",
+            line=dict(color="green", dash="dot")
+        ))
+
+        # Confidence interval
         fig.add_trace(go.Scatter(
             x=pd.concat([df_future["transaction_date"], df_future["transaction_date"][::-1]]),
             y=pd.concat([df_future["upper"], df_future["lower"][::-1]]),
@@ -53,15 +92,17 @@ def register_analytics_callback(app):
             showlegend=True
         ))
 
+        # Layout
         fig.update_layout(
-            title=f"{category} —  Past 30 days + 7 days Forecast",
+            title=f"{category} — Actual vs Predicted Transactions with Forecast",
             xaxis_title="Date",
             yaxis_title="Transaction Amount (NPR)",
-            hovermode="x unified",
-            template ="plotly_white",
+            hovermode="x",
+            template="plotly_white"
         )
 
         return fig
+
 
     @app.callback(
         Output("volume-growth-linechart", "figure"),
@@ -71,32 +112,72 @@ def register_analytics_callback(app):
         if not category:
             return go.Figure()
 
+            # API call
         response = requests.get(f'http://127.0.0.1:8000/api/category/forecast/category-count/{category}').json()
 
-        df_past, df_future = pd.DataFrame(response['past_data'], ), pd.DataFrame(response['future_data'])
+        # Load data
+        df_actual = pd.DataFrame(response['past_data_actual'])  # actual
+        df_forecast = pd.DataFrame(response['past_data_forecast'])  # forecast
+        df_future = pd.DataFrame(response['future_data_forecast'])  # next 7 days
 
-        df_past['transaction_date'] = pd.to_datetime(df_past['transaction_date'])
+        # Date conversion
+        df_actual['transaction_date'] = pd.to_datetime(df_actual['transaction_date'])
+        df_forecast['transaction_date'] = pd.to_datetime(df_forecast['transaction_date'])
         df_future['transaction_date'] = pd.to_datetime(df_future['transaction_date'])
 
+        # Merge actual and forecast on date to compare
+        df_compare = pd.merge(df_actual, df_forecast, on='transaction_date', suffixes=('_actual', '_pred'))
+
+        # Calculate prediction error (%)
+        df_compare['error_pct'] = ((df_compare['transaction_count_pred'] - df_compare['transaction_count_actual']) /
+                                   df_compare['transaction_count_actual']) * 100
+
+        # Identify large errors (> 20%)
+        df_compare['large_error'] = df_compare['error_pct'].abs() > 50
+
+        # Start plotting
         fig = go.Figure()
 
-        # Actual Line
+        # Actual Line (Blue)
         fig.add_trace(go.Scatter(
-            x=df_past["transaction_date"], y=df_past["transaction_count"],
-            mode="lines+markers",
-            name="Actual",
-            line=dict(color="blue")
+            x=df_compare['transaction_date'],
+            y=df_compare['transaction_count_actual'],
+            mode='lines+markers',
+            name='Actual',
+            line=dict(color='blue')
         ))
 
-        # Forecast Line
+        # Predicted Line (Green)
         fig.add_trace(go.Scatter(
-            x=df_future["transaction_date"], y=df_future["transaction_count"],
-            mode="lines+markers",
-            name="Forecast",
-            line=dict(color="green", dash="dash")
+            x=df_compare['transaction_date'],
+            y=df_compare['transaction_count_pred'],
+            mode='lines+markers',
+            name='Predicted',
+            line=dict(color='orange'),
         ))
 
-        # Confidence Interval: Shaded region
+        # Large Error Points (Red markers)
+        df_errors = df_compare[df_compare['large_error']]
+        fig.add_trace(go.Scatter(
+            x=df_errors['transaction_date'],
+            y=df_errors['transaction_count_pred'],
+            mode='markers',
+            name='Large Errors (>50%)',
+            marker=dict(color='red', size=10, symbol='x'),
+            hoverinfo='skip'
+
+        ))
+
+        # Forecast (Future) Line
+        fig.add_trace(go.Scatter(
+            x=df_future["transaction_date"],
+            y=df_future["transaction_count"],
+            mode="lines+markers",
+            name="Future Forecast",
+            line=dict(color="green", dash="dot")
+        ))
+
+        # Confidence interval
         fig.add_trace(go.Scatter(
             x=pd.concat([df_future["transaction_date"], df_future["transaction_date"][::-1]]),
             y=pd.concat([df_future["upper"], df_future["lower"][::-1]]),
@@ -108,13 +189,15 @@ def register_analytics_callback(app):
             showlegend=True
         ))
 
+        # Layout
         fig.update_layout(
-            title=f"{category} —  Past 30 days + 7 days Forecast",
+            title=f"{category} — Actual vs Predicted Transactions with Forecast",
             xaxis_title="Date",
-            yaxis_title="Number of Transaction",
-            hovermode="x unified",
-            template="plotly_white",
+            yaxis_title="Transaction Count",
+            hovermode="x",
+            template="plotly_white"
         )
+
         return fig
 
     @app.callback(
