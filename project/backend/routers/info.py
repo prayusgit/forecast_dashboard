@@ -1,12 +1,12 @@
 # Default Imports
 from fastapi import APIRouter
 import pandas as pd
-import pdfkit
-from fastapi.responses import HTMLResponse
+from datetime import datetime
+import os
 
 # Module Imports
 from services.data_loader import load_transaction_data
-
+from services.model import load_model
 
 router = APIRouter()
 
@@ -18,6 +18,7 @@ category_to_products = (
         .apply(list)
         .to_dict()
     )
+
 
 
 @router.get('/categories')

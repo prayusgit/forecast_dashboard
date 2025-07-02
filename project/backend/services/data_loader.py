@@ -15,6 +15,7 @@ def load_transaction_data(refresh=False) -> pd.DataFrame:
         df['transaction_date'] = pd.to_datetime(df['transaction_date'], dayfirst=True, format='mixed')
         df['category'] = df['category'].astype(str)
         df['product'] = df['product'].astype(str)
+
         _transaction_df = df
 
     return _transaction_df.copy()
@@ -26,18 +27,29 @@ def get_past_days_data_category(category_name, past_days=30):
     end_date = today - timedelta(days=1)
     df = load_transaction_data()
     df = df[df['category'] == category_name]
-    df = df[df['transaction_date'].between(start_date, end_date)]
 
     aggregated_df = df.groupby(["transaction_date"]).agg(
         transaction_count=("amount", "count"),
         transaction_amount=("amount", "sum")
     ).reset_index()
 
+    rolling_mean_data = aggregated_df['transaction_amount'].rolling(window=7).mean()
+    aggregated_df.loc[:, 'transaction_amount'] = rolling_mean_data
+
+    rolling_mean_data = aggregated_df['transaction_count'].rolling(window=7).mean()
+    aggregated_df.loc[:, 'transaction_count'] = rolling_mean_data
+
+    aggregated_df = aggregated_df[aggregated_df['transaction_date'].between(start_date, end_date)]
+
     # Reindex to include all date-category pairs
     aggregated_df = aggregated_df.set_index('transaction_date').asfreq('D', fill_value=0)
 
     # Reset index for further processing
     aggregated_df = aggregated_df.reset_index()
+
+    aggregated_df['transaction_count'] = aggregated_df['transaction_count'].apply(int)
+
+
     return aggregated_df
 
 
@@ -47,12 +59,16 @@ def get_past_days_data_product(category_name, product_name, past_days=30):
     end_date = today - timedelta(days=1)
     df = load_transaction_data()
     df = df[(df['category'] == category_name) & (df['product'] == product_name)]
-    df = df[df['transaction_date'].between(start_date, end_date)]
 
     aggregated_df = df.groupby(["transaction_date"]).agg(
         transaction_count=("amount", "count"),
         transaction_amount=("amount", "sum")
     ).reset_index()
+
+    rolling_mean_data = aggregated_df['transaction_amount'].rolling(window=7).mean()
+    aggregated_df.loc[:, 'transaction_amount'] = rolling_mean_data
+
+    aggregated_df = aggregated_df[aggregated_df['transaction_date'].between(start_date, end_date)]
 
     # Reindex to include all date-category pairs
     aggregated_df = aggregated_df.set_index('transaction_date').asfreq('D', fill_value=0)
@@ -114,6 +130,8 @@ def get_past_days_prediction_category(category_name, past_days=30):
     df = load_category_prediction_data()
     df = df[df['category'] == category_name]
     df = df[df['transaction_date'].between(start_date, end_date)]
+    df['transaction_amount'] = df['transaction_amount'].apply(int)
+    df['transaction_count'] = df['transaction_count'].apply(int)
     return df
 
 
@@ -124,5 +142,7 @@ def get_past_days_prediction_product(category_name, product_name, past_days=30):
     df = load_product_prediction_data()
     df = df[(df['category'] == category_name) & (df['product'] == product_name)]
     df = df[df['transaction_date'].between(start_date, end_date)]
+    df['transaction_amount'] = df['transaction_amount'].apply(int)
+
     return df
 

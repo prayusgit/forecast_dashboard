@@ -35,8 +35,8 @@ def register_analytics_callback(app):
         df_compare['error_pct'] = ((df_compare['transaction_amount_pred'] - df_compare['transaction_amount_actual']) /
                                    df_compare['transaction_amount_actual']) * 100
 
-        # Identify large errors (> 20%)
-        df_compare['large_error'] = df_compare['error_pct'].abs() > 50
+        # Identify large errors (> 30%)
+        df_compare['large_error'] = df_compare['error_pct'].abs() > 30
 
         # Start plotting
         fig = go.Figure()
@@ -65,7 +65,7 @@ def register_analytics_callback(app):
             x=df_errors['transaction_date'],
             y=df_errors['transaction_amount_pred'],
             mode='markers',
-            name='Large Errors (>50%)',
+            name='Large Errors (>30%)',
             marker=dict(color='red', size=10, symbol='x'),
             hoverinfo='skip'
 
@@ -132,8 +132,8 @@ def register_analytics_callback(app):
         df_compare['error_pct'] = ((df_compare['transaction_count_pred'] - df_compare['transaction_count_actual']) /
                                    df_compare['transaction_count_actual']) * 100
 
-        # Identify large errors (> 20%)
-        df_compare['large_error'] = df_compare['error_pct'].abs() > 50
+        # Identify large errors (> 30%)
+        df_compare['large_error'] = df_compare['error_pct'].abs() > 30
 
         # Start plotting
         fig = go.Figure()
@@ -162,7 +162,7 @@ def register_analytics_callback(app):
             x=df_errors['transaction_date'],
             y=df_errors['transaction_count_pred'],
             mode='markers',
-            name='Large Errors (>50%)',
+            name='Large Errors (>30%)',
             marker=dict(color='red', size=10, symbol='x'),
             hoverinfo='skip'
 

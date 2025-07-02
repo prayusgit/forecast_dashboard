@@ -17,7 +17,6 @@ def get_alerts():
     prediction_alerts = []
 
     categories = requests.get('http://127.0.0.1:8000/api/info/categories').json()['categories']
-
     model_data = load_model('category_count')
     model = model_data['model']
     category_target_mean = model_data['category_target_mean']

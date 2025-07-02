@@ -88,7 +88,9 @@ def forecast_category(category_name, model, aggregated_df, category_target_mean,
             target_col: [prediction]
         })], ignore_index=True)
 
-    return pd.DataFrame(forecasts)[['transaction_date', target_col]]
+    df = pd.DataFrame(forecasts)[['transaction_date', target_col]]
+    df[target_col] = df[target_col].apply(lambda x: x if x >= 0 else 0)
+    return df
 
 
 features_product = [
@@ -171,4 +173,7 @@ def forecast_product(category_name, product_name, model, aggregated_df, category
             'transaction_date': [forecast_date],
             target_col: [prediction]
         })], ignore_index=True)
-    return pd.DataFrame(forecasts)[['transaction_date', target_col]]
+
+    df = pd.DataFrame(forecasts)[['transaction_date', target_col]]
+    df[target_col] = df[target_col].apply(lambda x: x if x >=0 else 0)
+    return df
