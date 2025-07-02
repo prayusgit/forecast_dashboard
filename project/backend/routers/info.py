@@ -20,7 +20,6 @@ category_to_products = (
     )
 
 
-
 @router.get('/categories')
 def get_categories():
     categories = list(category_to_products.keys())
