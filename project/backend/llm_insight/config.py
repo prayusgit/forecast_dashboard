@@ -10,16 +10,10 @@ class LLMConfig:
     # Google Gemini Configuration
     # GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
     # GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
-    # GEMINI_API_KEY="AIzaSyAf5c_pZOLdR_rxtuJLdX_-yiarMXT9234"
+   
     GEMINI_API_KEY="YOUR API KEY"
     GEMINI_MODEL="gemini-1.5-flash"
-    
-    # Hugging Face Configuration (Fallback)
-    # HF_API_TOKEN = os.getenv("HF_API_TOKEN", "")
-    # HF_MODEL = os.getenv("HF_MODEL", "microsoft/DialoGPT-medium")
-    
-    # HF_API_TOKEN="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"
-    # HF_MODEL="microsoft/DialoGPT-medium"
+
 
 
     # Insight Generation Settings
