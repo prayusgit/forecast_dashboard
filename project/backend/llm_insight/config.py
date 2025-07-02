@@ -11,7 +11,7 @@ class LLMConfig:
     # GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
     # GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
     # GEMINI_API_KEY="AIzaSyAf5c_pZOLdR_rxtuJLdX_-yiarMXT9234"
-    GEMINI_API_KEY="AIzaSyApQyb1GDQfY3qMxhG_GXmc6BZePgdn6S-"
+    GEMINI_API_KEY="YOUR API KEY"
     GEMINI_MODEL="gemini-1.5-flash"
     
     # Hugging Face Configuration (Fallback)
