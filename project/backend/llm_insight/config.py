@@ -14,8 +14,6 @@ class LLMConfig:
     GEMINI_API_KEY="YOUR API KEY"
     GEMINI_MODEL="gemini-1.5-flash"
 
-
-
     # Insight Generation Settings
     MAX_TOKENS = 500
     TEMPERATURE = 0.4   # 0.4-0.6 banalced and good for reports, explaination and business insights
