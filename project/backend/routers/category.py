@@ -103,8 +103,8 @@ def forecast_category_amount(category: str):
     df_future_forecast = forecast_category(category, model, aggregated_df, category_target_mean, global_mean,
                                   num_days=7, target_col='transaction_amount')
 
-    df_future_forecast['lower'] = df_future_forecast['transaction_amount'].apply(lambda x: x * 0.8)
-    df_future_forecast['upper'] = df_future_forecast['transaction_amount'].apply(lambda x: x * 1.2)
+    df_future_forecast['lower'] = df_future_forecast['transaction_amount'].apply(lambda x: x * 0.9)
+    df_future_forecast['upper'] = df_future_forecast['transaction_amount'].apply(lambda x: x * 1.1)
     df_future_forecast['type'] = 'forecast'
 
     return {
@@ -132,8 +132,8 @@ def forecast_category_volume(category: str):
     df_future_forecast = forecast_category(category, model, aggregated_df, category_target_mean, global_mean,
                                            num_days=7, target_col='transaction_count')
 
-    df_future_forecast['lower'] = df_future_forecast['transaction_count'].apply(lambda x: x * 0.8)
-    df_future_forecast['upper'] = df_future_forecast['transaction_count'].apply(lambda x: x * 1.2)
+    df_future_forecast['lower'] = df_future_forecast['transaction_count'].apply(lambda x: x * 0.9)
+    df_future_forecast['upper'] = df_future_forecast['transaction_count'].apply(lambda x: x * 1.1)
     df_future_forecast['type'] = 'forecast'
 
     return {
