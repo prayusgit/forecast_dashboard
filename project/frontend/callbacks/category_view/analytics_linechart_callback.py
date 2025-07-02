@@ -94,7 +94,7 @@ def register_analytics_callback(app):
 
         # Layout
         fig.update_layout(
-            title=f"{category} — Actual vs Predicted Transactions with Forecast",
+            title=f"{category} — Actual vs Predicted Revenue with Forecast",
             xaxis_title="Date",
             yaxis_title="Transaction Amount (NPR)",
             hovermode="x",
@@ -191,7 +191,7 @@ def register_analytics_callback(app):
 
         # Layout
         fig.update_layout(
-            title=f"{category} — Actual vs Predicted Transactions with Forecast",
+            title=f"{category} — Actual vs Predicted Request Traffic with Forecast",
             xaxis_title="Date",
             yaxis_title="Transaction Count",
             hovermode="x",

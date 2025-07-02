@@ -10,6 +10,7 @@ from utils.helper_functions import format
 # --- Callback with no inputs: triggered automatically on load
 def register_dash_table_callback(app):
     @app.callback(
+        Output('wow-table-data-store', 'data'),
         Output("wow-growth-table", "children"),
         Input('wow-multi-category-selection-dropdown', 'value')
     )
@@ -19,7 +20,7 @@ def register_dash_table_callback(app):
         data = response['wow_growth_list']
         df = pd.DataFrame(data, columns=["Category", "Week Forecast (Rs)", "WoW Growth (%)"])
         df['Week Forecast (Rs)'] = df['Week Forecast (Rs)'].apply(format)
-        return dash_table.DataTable(
+        return df.to_dict(), dash_table.DataTable(
             columns=[{"name": col, "id": col} for col in df.columns],
             data=df.to_dict("records"),
             style_cell={

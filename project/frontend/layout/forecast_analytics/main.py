@@ -2,7 +2,7 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 
 # Module Imports
-from components.category_view.category_data_store import category_data_store
+from components.category_view.category_data_store import category_data_store, wow_table_data_store
 from components.product_view.product_data_store import product_data_store
 
 def create_forecast_analytics_layout():
@@ -21,5 +21,6 @@ def create_forecast_analytics_layout():
 
             html.Div(id='tabs-content'),
             category_data_store,
-            product_data_store
+            wow_table_data_store,
+            product_data_store,
     ])

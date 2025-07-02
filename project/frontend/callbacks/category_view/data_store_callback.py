@@ -23,3 +23,6 @@ def register_data_store_callback(app):
             'selected_forecast_day': selected_forecast_day
         }
         return return_data
+
+
+

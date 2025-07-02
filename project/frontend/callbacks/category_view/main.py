@@ -9,7 +9,7 @@ from .alert_callback import register_alert_callback
 from .kpi_callback import register_kpi_callback
 from .data_store_callback import register_data_store_callback
 from .modal_callback import register_insights_modal_callback
-
+from .email_callback import register_email_callback
 def register_category_view_callbacks(app):
     register_prediction_callback(app)
     register_analytics_callback(app)
@@ -18,4 +18,5 @@ def register_category_view_callbacks(app):
     register_kpi_callback(app)
     register_data_store_callback(app)
     register_insights_modal_callback(app)
+    register_email_callback(app)
 

@@ -21,7 +21,7 @@ def register_prediction_callback(app):
             x='category',
             y='transaction_amount',
             text='transaction_amount',
-            title=f"Forecast - {selected_forecast_day}",
+            title=f"Revenue Forecast - {selected_forecast_day}",
             labels={"transaction_amount": "Predicted Amount (Rs)"},
             color='category'
         )
@@ -37,12 +37,13 @@ def register_prediction_callback(app):
 
         df = pd.DataFrame(data['data'])
 
+        selected_forecast_day = data['selected_forecast_day']
         fig = px.bar(
                 df,
                 x='category',
                 y='transaction_count',
                 text='transaction_count',
-                title=f"  ",
+                title=f"Number of Transactions Forecast - {selected_forecast_day}",
                 labels={"transaction_count": "No. of Transactions"},
                 color='category'
             )

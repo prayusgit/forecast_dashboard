@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 
 class DataProcessor:
     """Process transaction data for LLM insight generation"""
+    
     def __init__(self):
         pass
     
