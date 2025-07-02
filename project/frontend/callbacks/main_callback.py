@@ -6,6 +6,7 @@ from layout.forecast_analytics.category_view.main import create_category_view_la
 from layout.forecast_analytics.product_view.main import create_product_view_layout
 from .category_view.main import register_category_view_callbacks
 from .product_view.main import register_product_view_callbacks
+from .category_view.analytics_linechart_callback import register_insights_modal_callback
 import pdfkit
 
 def register_callbacks(app):
@@ -21,4 +22,5 @@ def register_callbacks(app):
 
     register_category_view_callbacks(app)
     register_product_view_callbacks(app)
+    register_insights_modal_callback(app)
 

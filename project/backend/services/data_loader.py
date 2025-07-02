@@ -1,17 +1,22 @@
 # Default Imports
 import pandas as pd
 from datetime import datetime, timedelta
+import os
 
 _transaction_df = None  # cache in memory
 _category_prediction_df = None
 _product_prediction_df = None
+
+# Set BASE_DIR to the project root (two levels up from this file)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 ########## Original data part
 def load_transaction_data(refresh=False) -> pd.DataFrame:
     global _transaction_df
 
     if _transaction_df is None or refresh:
-        df = pd.read_csv("../data/original_data/synthetic_data_v6.csv")  # or query DB
+        DATA_PATH = os.path.join(BASE_DIR, "data", "original_data", "synthetic_data_v6.csv")
+        df = pd.read_csv(DATA_PATH)  # or query DB
         df['transaction_date'] = pd.to_datetime(df['transaction_date'], dayfirst=True, format='mixed')
         df['category'] = df['category'].astype(str)
         df['product'] = df['product'].astype(str)
@@ -88,7 +93,8 @@ def load_category_prediction_data(refresh=False) -> pd.DataFrame:
     global _category_prediction_df
 
     if _category_prediction_df is None or refresh:
-        df = pd.read_csv("../data/prediction_data/category_prediction_data_v6.csv")  # or query DB
+        PRED_PATH = os.path.join(BASE_DIR, "data", "prediction_data", "category_prediction_data_v6.csv")
+        df = pd.read_csv(PRED_PATH)  # or query DB
         df['transaction_date'] = pd.to_datetime(df['transaction_date'], dayfirst=True, format='mixed')
         df['category'] = df['category'].astype(str)
         _category_prediction_df = df
@@ -99,7 +105,8 @@ def load_product_prediction_data(refresh=False) -> pd.DataFrame:
     global _product_prediction_df
 
     if _product_prediction_df is None or refresh:
-        df = pd.read_csv("../data/prediction_data/product_prediction_data_v6.csv")  # or query DB
+        PROD_PRED_PATH = os.path.join(BASE_DIR, "data", "prediction_data", "product_prediction_data_v6.csv")
+        df = pd.read_csv(PROD_PRED_PATH)  # or query DB
         df['transaction_date'] = pd.to_datetime(df['transaction_date'], dayfirst=True, format='mixed')
         df['category'] = df['category'].astype(str)
         df['product'] = df['product'].astype(str)
