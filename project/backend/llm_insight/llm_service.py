@@ -51,7 +51,7 @@ class LLMService:
             if self.gemini_available:
                 insight_text = self._generate_with_gemini(prompt)
             else:
-                insight_text = self._generate_with_huggingface(prompt)
+                return self._generate_fallback_insight(user_type, transaction_data)
             insight = {
                 "user_type": user_type,
                 "insight_text": insight_text,
@@ -74,7 +74,7 @@ class LLMService:
             if self.gemini_available:
                 insight_text = self._generate_with_gemini(prompt)
             else:
-                insight_text = self._generate_with_huggingface(prompt)
+                return self._generate_fallback_insight(user_type, transaction_data)
             insight = {
                 "user_type": user_type,
                 "insight_text": insight_text,
@@ -85,6 +85,29 @@ class LLMService:
             return insight
         except Exception as e:
             logger.error(f"Error generating insight: {e}")
+            return self._generate_fallback_insight(user_type, transaction_data)
+
+    def generate_insight_product(self, user_type: str, transaction_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Generate insights for specific user type (product-specific analysis)
+        """
+        try:
+            processed_data = self.data_processor.prepare_data_for_insights(transaction_data)
+            prompt = self._create_prompt(user_type, processed_data, self.config.PROMPT_TEMPLATES_PRODUCT)
+            if self.gemini_available:
+                insight_text = self._generate_with_gemini(prompt)
+            else:
+                return self._generate_fallback_insight(user_type, transaction_data)
+            insight = {
+                "user_type": user_type,
+                "insight_text": insight_text,
+                "generated_at": datetime.now().isoformat(),
+                "data_context": processed_data,
+                "source": "gemini"
+            }
+            return insight
+        except Exception as e:
+            logger.error(f"Error generating product insight: {e}")
             return self._generate_fallback_insight(user_type, transaction_data)
 
     def _create_prompt(self, user_type: str, data_context: Dict[str, Any], template_dict=None) -> str:
@@ -148,12 +171,12 @@ class LLMService:
     
     def _generate_fallback_insight(self, user_type: str, transaction_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate fallback insight using templates"""
-        fallback_templates = {
-            "executive": "Transaction volume shows {trend} pattern. Key categories: {top_categories}. Revenue impact: {revenue_impact}.",
-            "marketing": "Customer engagement is {engagement_level}. Best performing category: {best_category}. Campaign opportunity: {opportunity}.",
-            "engineering": "Model accuracy: {accuracy}%. System performance: {performance}. Data quality: {quality}.",
-            "non-tech": "Transactions are {trend_description}. The {category} category is doing {performance}. This means {business_impact}."
-        }
+        # fallback_templates = {
+        #     "executive": "Transaction volume shows {trend} pattern. Key categories: {top_categories}. Revenue impact: {revenue_impact}.",
+        #     "marketing": "Customer engagement is {engagement_level}. Best performing category: {best_category}. Campaign opportunity: {opportunity}.",
+        #     "engineering": "Model accuracy: {accuracy}%. System performance: {performance}. Data quality: {quality}.",
+        #     "non-tech": "Transactions are {trend_description}. The {category} category is doing {performance}. This means {business_impact}."
+        # }
         
         # Extract basic metrics for fallback
         metrics = transaction_data.get("metrics", {})
@@ -176,21 +199,21 @@ class LLMService:
             "source": "fallback_template"
         }
     
-    def generate_dashboard_summary(self, transaction_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Generate summary insights for dashboard"""
-        user_types = ["executive", "marketing", "engineering", "non-tech"]
-        summaries = []
+    # def generate_dashboard_summary(self, transaction_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    #     """Generate summary insights for dashboard"""
+    #     user_types = ["executive", "marketing", "engineering", "non-tech"]
+    #     summaries = []
         
-        for user_type in user_types:
-            try:
-                insight = self.generate_insight(user_type, transaction_data)
-                summaries.append(insight)
-            except Exception as e:
-                logger.error(f"Error generating summary for {user_type}: {e}")
-                # Add fallback
-                summaries.append(self._generate_fallback_insight(user_type, transaction_data))
+    #     for user_type in user_types:
+    #         try:
+    #             insight = self.generate_insight(user_type, transaction_data)
+    #             summaries.append(insight)
+    #         except Exception as e:
+    #             logger.error(f"Error generating summary for {user_type}: {e}")
+    #             # Add fallback
+    #             summaries.append(self._generate_fallback_insight(user_type, transaction_data))
         
-        return summaries 
+    #     return summaries 
 
 llm_service = LLMService()
 
